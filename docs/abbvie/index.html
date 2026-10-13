@@ -206,7 +206,7 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 </div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="puzzle.js?v=7975e9f6"></script>
+<script src="puzzle.js?v=6ea94f7a"></script>
 <script>
 (() => {
 const $ = id => document.getElementById(id);
@@ -320,19 +320,26 @@ function stepWord(delta) {
   gotoWord(order[k]);
 }
 function toggleDir() { if (cellWords[cur][1 - dir] >= 0) { dir = 1 - dir; render(); } }
-function advance() {
-  const w = curWord(), k = w.cells.indexOf(cur);
-  if (k < w.cells.length - 1) cur = w.cells[k + 1];
-  else { const empty = w.cells.find(ci => !entries[ci]); if (empty !== undefined) cur = empty; else if (!isSolved()) { stepWord(1); return; } }
+// 這個字裡下一個「還沒填對」的格子（已經填對、預填或揭露的格子會跳過）
+const isRight = i => entries[i] === answer[i];
+function nextOpen(w, from) {
+  for (let k = from; k < w.cells.length; k++) if (!isRight(w.cells[k])) return w.cells[k];
+  return -1;
 }
 function typeLetter(ch) {
   if (done || !playing) return;
-  const w = curWord();
-  while (given.has(cur) && w.cells.indexOf(cur) < w.cells.length - 1) cur = w.cells[w.cells.indexOf(cur) + 1];
-  if (!locked(cur)) entries[cur] = ch.toUpperCase();
-  advance();
-  const w2 = curWord();
-  while (given.has(cur) && w2.cells.indexOf(cur) < w2.cells.length - 1) cur = w2.cells[w2.cells.indexOf(cur) + 1];
+  let w = curWord();
+  // 游標停在已經正確的格子上時，先跳到這個字下一個要填的格子
+  if (isRight(cur) || locked(cur)) {
+    const t = nextOpen(w, w.cells.indexOf(cur));
+    if (t < 0) { const any = nextOpen(w, 0); if (any < 0) { stepWord(1); return; } cur = any; } else cur = t;
+  }
+  entries[cur] = ch.toUpperCase();
+  // 填錯就停在原地，方便馬上改試別的字母
+  if (!isRight(cur)) { afterEdit(); return; }
+  const t = nextOpen(w, w.cells.indexOf(cur) + 1);
+  if (t >= 0) cur = t;
+  else if (!isSolved()) { const any = nextOpen(w, 0); if (any >= 0) cur = any; else { afterEdit(); stepWord(1); return; } }
   afterEdit();
 }
 function backspace() {
