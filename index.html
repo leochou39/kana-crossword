@@ -76,7 +76,6 @@ header { display: flex; flex-wrap: wrap; align-items: end; justify-content: spac
 .cell.inword { background: var(--ai-wash); }
 .cell.cur { background: var(--yamabuki); }
 .cell.wrong .ch { color: var(--wrong); }
-.cell.wrong::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent 47%, var(--wrong) 48%, var(--wrong) 52%, transparent 53%); opacity: .5; pointer-events: none; }
 .cell.rv .ch { color: var(--ai); }
 .cell.cur.rv .ch { color: var(--ink); }
 .cell .buf { font-family: var(--font-body); font-size: 3cqw; color: var(--ink-soft); font-weight: 500; }
@@ -272,6 +271,7 @@ header { display: flex; flex-wrap: wrap; align-items: end; justify-content: spac
             <li>點格子選位置，再點一次或按空白鍵切換橫向／直向；Tab 跳下一題。</li>
             <li>拗音、促音一律寫成大字：<code>きょう</code> → <code>きよう</code>、<code>がっこう</code> → <code>がつこう</code>。</li>
             <li>長音「ー」佔一格（羅馬字按 <code>-</code>）。標有 <code>外來語</code> 的題目答案原本是片假名，填平假名即可。</li>
+            <li>填錯的假名會立刻變成紅字。</li>
             <li>假名鍵盤上的 <code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。</li>
             <li>題目每天午夜（你所在的時區）更新，可以用 ‹ › 回顧過去的題目，進度會自動儲存在這台裝置。</li>
           </ul>
@@ -482,7 +482,7 @@ function render() {
     el.classList.toggle('cur', i === cur);
     el.classList.toggle('inword', inW.has(i) && i !== cur);
     el.classList.toggle('rv', revealed.has(i));
-    el.classList.toggle('wrong', wrong.has(i));
+    el.classList.toggle('wrong', !!entries[i] && entries[i] !== answer[i]);
     const ch = el.querySelector('.ch');
     if (i === cur && buf) { ch.innerHTML = `<span class="buf">${buf}</span>`; }
     else ch.textContent = entries[i];
