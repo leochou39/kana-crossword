@@ -3,6 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="每天一題 10×10 日文假名填字遊戲，用生活情境提示複習 JLPT N5–N4 單字，完成後附例句與文法。">
+<meta name="theme-color" content="#2E7A4C">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="毎日クロスワード">
+<meta property="og:title" content="毎日クロスワード｜N5–N4 日文假名填字">
+<meta property="og:description" content="每天一題 10×10 日文假名填字遊戲，用生活情境提示複習 JLPT N5–N4 單字，完成後附例句與文法。">
+<meta property="og:url" content="https://leochou39.github.io/kana-crossword/">
+<meta property="og:image" content="https://leochou39.github.io/kana-crossword/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
 <body>
 <title>每日假名填字</title>
@@ -136,6 +149,21 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .result .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .result .acts button { border: 1px solid var(--ai); background: var(--ai); color: var(--sheet); border-radius: var(--radius); padding: 6px 12px; font-size: 13px; }
 .result .acts button.ghost { background: transparent; color: var(--ai); }
+.wsum { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
+.wlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
+.wcard { border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; background: var(--paper); min-width: 0; }
+.wh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.wno { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.wh .k { font-weight: 700; font-size: 18px; }
+.wr { font-size: 15px; }
+.wm { font-size: 14px; color: var(--ink-soft); }
+.lv { font-size: 11px; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ai); color: var(--ai); }
+.lv-N4 { background: var(--ai); color: var(--sheet); }
+.ex { margin: 6px 0 0; font-size: 15px; line-height: 1.6; }
+.ex b { color: var(--ai); }
+.ext { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
+.gram { display: inline-block; margin-left: 6px; font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--ai-wash); color: var(--ink); }
+.wclue { margin: 6px 0 0; font-size: 12px; color: var(--ink-soft); border-top: 1px dashed var(--rule); padding-top: 5px; }
 .tbl { overflow-x: auto; }
 .tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
 .tbl th, .tbl td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
@@ -278,6 +306,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
             <li>拗音、促音一律寫成大字：<code>きょう</code> → <code>きよう</code>、<code>がっこう</code> → <code>がつこう</code>。</li>
             <li>長音「ー」佔一格（羅馬字按 <code>-</code>）。標有 <code>外來語</code> 的題目答案原本是片假名，填平假名即可。</li>
             <li>填錯的假名會立刻變成紅字。</li>
+            <li>完成後會列出本期所有單字的漢字寫法、例句和文法點，標有 <code>N4</code> 的是 N4 單字。</li>
             <li>假名鍵盤上的 <code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。</li>
             <li>題目每天午夜（你所在的時區）更新，可以用 ‹ › 回顧過去的題目，進度會自動儲存在這台裝置。</li>
           </ul>
@@ -659,14 +688,20 @@ function renderResult(scroll) {
   const box = $('result');
   if (!done) { box.hidden = true; return; }
   const ts = fmtTime(Math.floor(elapsed / 1000));
+  const n4 = order.filter(w => VOCAB[w.vi][5] === 'N4').length;
   const rows = order.map(w => {
-    const [kana, written, meaning, , clue] = VOCAB[w.vi];
-    return `<tr><td>${w.num}${w.d ? 'タテ' : 'ヨコ'}</td><td class="k">${kana}</td><td>${written !== kana ? written : ''}</td><td class="m">${meaning}</td><td class="m">${clue}</td></tr>`;
+    const [kana, written, meaning, pos, clue, lv, ex, exTr, gram] = VOCAB[w.vi];
+    return `<li class="wcard">
+      <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="lv lv-${lv}">${lv}</span><span class="wm">${meaning}</span></div>
+      <p class="ex">${markWord(ex, kana, written)}</p>
+      <p class="ext">${exTr}<span class="gram">${gram}</span></p>
+      <p class="wclue">提示：${clue}</p>
+    </li>`;
   }).join('');
   box.innerHTML = `<h2>${usedReveal ? 'おつかれさま！' : 'よくできました！'}</h2>
     <p class="sub">${fmt(date)} 第 ${dayIndex(date) + 1} 期 · 用時 ${ts}${usedReveal ? ' · 有使用提示' : ''}</p>
     <div class="acts"><button id="bCopy">複製成績</button><button class="ghost" id="bHide">收起單字表</button></div>
-    <div class="tbl" id="wordTbl"><table><thead><tr><th>題號</th><th>讀音</th><th>寫法</th><th>意思</th><th>提示</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    <div id="wordTbl"><p class="wsum">本期 ${order.length} 個單字，其中 N4 ${n4} 個。每個單字附上例句與文法點，順便複習。</p><ul class="wlist">${rows}</ul></div>`;
   box.hidden = false;
   $('bCopy').onclick = () => {
     const text = `毎日クロスワード ${fmt(date)}（第 ${dayIndex(date) + 1} 期）${usedReveal ? '完成（有提示）' : '✓'} ${ts}`;
@@ -675,6 +710,16 @@ function renderResult(scroll) {
   };
   $('bHide').onclick = () => { const tb = $('wordTbl'); tb.hidden = !tb.hidden; $('bHide').textContent = tb.hidden ? '展開單字表' : '收起單字表'; };
   if (scroll) box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+// 例句中把單字標粗：先找寫法，再找去掉詞尾假名的語幹，最後找讀音
+function markWord(sentence, kana, written) {
+  const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const cands = [written, written.replace(/[\u3041-\u3096]+$/, ''), kana, kana.slice(0, -1)]
+    .filter(t => t && t.length >= 1 && !(t.length === 1 && /[\u3041-\u3096]/.test(t)));
+  for (const t of cands) {
+    if (sentence.includes(t)) return sentence.replace(new RegExp(esc(t)), m => `<b>${m}</b>`);
+  }
+  return sentence;
 }
 let pending = null;
 function ask(text, fn) { pending = fn; $('confirmTxt').textContent = text; $('confirm').hidden = false; }
