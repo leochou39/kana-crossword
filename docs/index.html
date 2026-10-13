@@ -433,7 +433,7 @@ function clueHTML(w, withHint) {
   const [kana, written, meaning, pos, clue] = VOCAB[w.vi];
   const showK = withHint && opts.kanji && written !== kana && pos !== '外來語';
   const tag = pos === '外來語' ? '<span class="pos tag-loan">外來語</span>' : `<span class="pos">${POS[pos] || pos}</span>`;
-  const tr = (pos === '外來語' || pos === '副詞・其他') ? `<span class="tr">（${meaning}）</span>` : '';
+  const tr = pos === '副詞・其他' ? `<span class="tr">（${meaning}）</span>` : '';
   return `<span class="m">${clue}</span>${tr}${tag}` + (showK ? `<span class="kh">「${written}」</span>` : '');
 }
 function buildClues() {
