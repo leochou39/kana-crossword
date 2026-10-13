@@ -20,7 +20,8 @@ mkdir -p docs
   printf '<link rel="icon" type="image/png" href="apple-touch-icon.png">\n'
   printf '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n'
   printf '</head>\n<body>\n'
-  cat index.html
+  # 題目檔加上版本號，更新後瀏覽器才不會用到快取的舊題目
+  sed "s|src=\"puzzles.js\"|src=\"puzzles.js?v=$(md5 -q puzzles.js | cut -c1-8)\"|" index.html
   printf '\n</body>\n</html>\n'
 } > docs/index.html
 cp puzzles.js docs/puzzles.js
