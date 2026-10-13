@@ -339,9 +339,9 @@ const store = {
 };
 
 /* ---------- kana helpers ---------- */
-const SMALL = { 'ぁ':'あ','ぃ':'い','ぅ':'う','ぇ':'え','ぉ':'お','っ':'つ','ゃ':'や','ゅ':'ゆ','ょ':'よ','ゎ':'わ' };
+const SMALL = { 'ぁ':'あ','ぃ':'い','ぅ':'う','ぇ':'え','ぉ':'お','っ':'つ','ゃ':'や','ゅ':'ゆ','ょ':'よ','ゎ':'わ','ゕ':'か','ゖ':'け' };
 function norm(ch) {
-  if (ch === '-' || ch === '－' || ch === '〜') return 'ー';
+  if ('-－〜~～‐‑–—―−ｰ'.includes(ch)) return 'ー';  // 各種輸入法打出的長音／橫線
   const o = ch.codePointAt(0);
   if (o >= 0x30A1 && o <= 0x30F6) ch = String.fromCodePoint(o - 0x60);
   return SMALL[ch] || ch;
@@ -634,7 +634,10 @@ function writeCell(i, ch) {
 function typeKana(str) {
   if (done) return;
   startTick();
+  // 半形片假名（ｶﾞ）、分開的濁音符號（か＋゛）先合成一個字，避免填對卻變紅字
+  str = str.replace(/[\u309B\uFF9E]/g, '\u3099').replace(/[\u309C\uFF9F]/g, '\u309A').normalize('NFKC');
   for (const raw of str) {
+    if (raw === '\u3099' || raw === '\u309A') { applyMark(raw === '\u3099' ? DAKU : HANDAKU, true); continue; }
     const ch = norm(raw);
     if (!isKana(ch)) continue;
     writeCell(cur, ch);
@@ -655,11 +658,11 @@ function backspace() {
   lastTyped = -1;
   afterEdit();
 }
-function applyMark(table) {
+function applyMark(table, quiet) {
   if (done) return;
   const i = lastTyped >= 0 && entries[lastTyped] ? lastTyped : cur;
   const ch = entries[i];
-  if (ch && table[ch] && writeCell(i, table[ch])) afterEdit();
+  if (ch && table[ch] && writeCell(i, table[ch]) && !quiet) afterEdit();
 }
 function romaji(key) {
   if (done) return;
@@ -716,7 +719,7 @@ function renderResult(scroll) {
   }).join('');
   const hints = revealed.size;  // 每揭露一格答案算一次
   box.innerHTML = `<h2>${hints ? 'おつかれさま！' : 'よくできました！'}</h2>
-    <p class="sub">${fmt(date)} ${fullName(date)} · 用時 ${ts} · ${hints ? `使用提示 ${hints} 次` : '沒有使用提示'}</p>
+    <p class="sub">${fmt(date)} ${fullName(date)}<br>用時 ${ts} · ${hints ? `使用提示 ${hints} 次` : '沒有使用提示'}</p>
     <div class="acts"><button id="bCopy">複製成績</button><button class="ghost" id="bHide">收起單字表</button></div>
     <div id="wordTbl"><p class="wsum">本期 ${order.length} 個單字，其中 N4 ${n4} 個。每個單字附上例句與文法點，順便複習。</p><ul class="wlist">${rows}</ul></div>`;
   box.hidden = false;
