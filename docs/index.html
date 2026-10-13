@@ -66,14 +66,15 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .brand p { margin: 4px 0 0; color: var(--ink-soft); font-size: 13px; }
 .brand .lv { display: inline-block; border: 1px solid var(--ai); color: var(--ai); border-radius: 3px; padding: 0 5px; font-size: 11px; letter-spacing: .06em; margin-right: 6px; vertical-align: 1px; }
 .datebar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
-.datebar .nav { width: 34px; height: 34px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 18px; line-height: 1; }
+.datebar .nav { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 18px; line-height: 1; }
 .datebar .nav:disabled { opacity: .35; cursor: default; }
-.datebar .d { display: flex; align-items: center; gap: 8px; }
+.datebar .d { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); }
+.datebar .d:hover { border-color: var(--ai); }
 .datebar .d .no { display: flex; flex-direction: column; text-align: left; line-height: 1.3; }
 .datebar .d .no span { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
-@media (max-width: 420px) { .datebar { gap: 5px; } .datebar .d { gap: 6px; } .datebar .d b { font-size: 14px; } .datebar .d .y { display: none; } .datebar .d .no span { font-size: 11px; } .datebar .timer { min-width: 56px; padding-inline: 8px; } .datebar .hbtn { padding: 0 9px; } .datebar .nav { width: 30px; } }
+@media (max-width: 420px) { .datebar { gap: 4px; flex-wrap: nowrap; } .datebar .d { gap: 6px; padding: 0 7px; } .datebar .d b { font-size: 13px; } .datebar .d .no span { font-size: 10.5px; } .datebar .timer { min-width: 0; padding-inline: 7px; gap: 4px; font-size: 14px; } .datebar .nav { width: 30px; } }
 .datebar .d b { font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.timer { font-variant-numeric: tabular-nums; font-size: 15px; padding: 6px 10px; border-radius: var(--radius); background: var(--sheet); border: 1px solid var(--rule); min-width: 70px; text-align: center; }
+.timer { font-variant-numeric: tabular-nums; font-size: 15px; height: 40px; padding: 0 10px; border-radius: var(--radius); background: var(--sheet); border: 1px solid var(--rule); min-width: 70px; text-align: center; }
 .timer.done { color: var(--good); border-color: var(--good); }
 
 /* main layout */
@@ -87,7 +88,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .clue-bar .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35; }
 .clue-bar .pos { font-size: 11px; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; margin-left: 6px; opacity: .8; white-space: nowrap; }
 .clue-bar .len { font-size: 12px; margin-left: 6px; opacity: .8; }
-.clue-bar .arr { width: 30px; height: 30px; border-radius: 50%; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .85; flex: none; }
+.clue-bar .arr { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .85; flex: none; }
 
 .gridbox { position: relative; container-type: inline-size; }
 .grid { display: grid; grid-template-columns: repeat(10, 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
@@ -108,16 +109,17 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 #kbd.composing { opacity: 1; width: auto; min-width: 20%; color: var(--ink); background: var(--sheet); border: 2px solid var(--ai); font-family: var(--font-kana); padding: 0 4px; }
 
 .tools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.tools button { border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 6px 11px; font-size: 13px; }
+.tools { align-items: center; }
+.tools button { height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 0 12px; font-size: 13px; }
 .tools button:hover { border-color: var(--ai); }
 .tools .sp { flex: 1; }
 .tools .danger:hover { border-color: var(--wrong); color: var(--wrong); }
 .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 10px; background: var(--wrong-wash); border-radius: var(--radius); font-size: 13px; }
-.confirm button { border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 4px 10px; font-size: 13px; }
+.confirm button { height: 32px; display: inline-flex; align-items: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 0 12px; font-size: 13px; }
 
 /* kana keyboard */
 .kana { margin-top: 12px; display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
-.kana button { height: 40px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-family: var(--font-kana); font-weight: 600; font-size: 17px; padding: 0; touch-action: manipulation; }
+.kana button { height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-family: var(--font-kana); font-weight: 600; font-size: 17px; padding: 0; touch-action: manipulation; }
 .kana button:active { background: var(--ai-wash); }
 .kana button.fn { background: var(--ai-wash); font-family: var(--font-body); font-size: 15px; }
 .kana .gap { visibility: hidden; }
@@ -147,7 +149,8 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .result h2 { font-family: var(--font-kana); font-weight: 600; margin: 0 0 4px; font-size: 22px; }
 .result .sub { color: var(--ink-soft); margin: 0 0 12px; font-size: 14px; }
 .result .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.result .acts button { border: 1px solid var(--ai); background: var(--ai); color: var(--sheet); border-radius: var(--radius); padding: 6px 12px; font-size: 13px; }
+.result .acts { align-items: center; }
+.result .acts button { height: 36px; display: inline-flex; align-items: center; border: 1px solid var(--ai); background: var(--ai); color: var(--sheet); border-radius: var(--radius); padding: 0 14px; font-size: 13px; }
 .result .acts button.ghost { background: transparent; color: var(--ai); }
 .wsum { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
 .wlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
@@ -207,23 +210,20 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .stat { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; }
 .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stat span { font-size: 12px; color: var(--ink-soft); }
-.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 16px; max-width: 360px; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: 0 auto 16px; max-width: 360px; }
 .cal .h { font-size: 11px; color: var(--ink-soft); text-align: center; }
 .cal button { aspect-ratio: 1; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-size: 12px; font-variant-numeric: tabular-nums; padding: 0; position: relative; }
 .cal button:disabled { opacity: .3; cursor: default; }
 .cal button.s-done { background: var(--ai); color: var(--sheet); border-color: var(--ai); }
-.cal button.s-help { background: var(--ai-wash); border-color: var(--ai); }
 .cal button.s-prog { border-color: var(--yamabuki); border-width: 2px; }
 .cal button.today { outline: 2px solid var(--ink); outline-offset: 1px; }
-.cal .mon { grid-column: 1 / -1; font-size: 13px; font-weight: 700; margin-top: 6px; }
-.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-soft); margin: -6px 0 14px; }
+.cal .mon { grid-column: 1 / -1; font-size: 13px; font-weight: 700; margin-top: 6px; text-align: center; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; font-size: 12px; color: var(--ink-soft); margin: -6px 0 14px; }
 .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--rule); background: var(--sheet); vertical-align: -2px; margin-right: 4px; }
 .legend i.s-done { background: var(--ai); border-color: var(--ai); }
-.legend i.s-help { background: var(--ai-wash); border-color: var(--ai); }
 .legend i.s-prog { border: 2px solid var(--yamabuki); }
 .pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--rule); white-space: nowrap; }
 .pill.s-done { background: var(--ai); color: var(--sheet); border-color: var(--ai); }
-.pill.s-help { background: var(--ai-wash); border-color: var(--ai); }
 .pill.s-prog { border-color: var(--yamabuki); }
 .hist tbody tr { cursor: pointer; }
 .hist tbody tr:hover td { background: var(--ai-wash); }
@@ -241,10 +241,9 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
     </div>
     <div class="datebar">
       <button class="nav" id="prev" aria-label="前一天">‹</button>
-      <div class="d"><b id="dateLabel"></b><span class="no"><span id="noLabel"></span><span id="noTag"></span></span></div>
+      <button class="d" id="bHist" title="看遊玩紀錄"><b id="dateLabel"></b><span class="no"><span id="noLabel"></span><span id="noTag"></span></span></button>
       <button class="nav" id="next" aria-label="後一天">›</button>
       <button class="timer" id="timer" title="暫停"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/></svg><span id="timerTxt">0:00</span></button>
-      <button class="hbtn" id="bHist">紀錄</button>
     </div>
   </header>
 
@@ -302,14 +301,14 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
         <div class="howto">
           <h3>玩法</h3>
           <ul>
-            <li>按「開始」才會顯示題目並開始計時；點計時器可以暫停。</li>
+            <li><b>輸入方式</b>：手機用畫面上的假名鍵盤，<code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。電腦可以直接打羅馬字，例如 <code>ka</code> → か、<code>nn</code> → ん、<code>-</code> → ー；也可以開日文輸入法打平假名後按 Enter（不要轉成漢字）。電腦上想用假名鍵盤，勾選下方「顯示假名鍵盤」即可。</li>
+            <li>按「開始」才會顯示題目並開始計時；點計時器可以暫停，點日期可以看遊玩紀錄。</li>
             <li>點格子選位置，再點一次或按空白鍵切換橫向／直向；Tab 跳下一題。</li>
             <li>拗音、促音一律寫成大字：<code>きょう</code> → <code>きよう</code>、<code>がっこう</code> → <code>がつこう</code>。</li>
             <li>長音「ー」佔一格（羅馬字按 <code>-</code>）。標有 <code>外來語</code> 的題目答案原本是片假名，填平假名即可。</li>
             <li>填錯的假名會立刻變成紅字。</li>
             <li>標有 <code>動・變化</code> 的題目要填動詞的變化形，例如「食べる」的ない形就填 <code>たべない</code>。</li>
             <li>完成後會列出本期所有單字的漢字寫法、例句和文法點，標有 <code>N4</code> 的是 N4 單字。</li>
-            <li>假名鍵盤上的 <code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。</li>
             <li>題目每天午夜（你所在的時區）更新，可以用 ‹ › 回顧過去的題目，進度會自動儲存在這台裝置。</li>
           </ul>
         </div>
@@ -322,8 +321,8 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
     <div class="top"><h2 id="histTitle">遊玩紀錄</h2><button class="x" id="histClose" aria-label="關閉">×</button></div>
     <div class="stats" id="stats"></div>
     <div class="cal" id="cal"></div>
-    <div class="legend"><span><i class="s-done"></i>完成</span><span><i class="s-help"></i>有用提示</span><span><i class="s-prog"></i>進行中</span><span><i></i>未玩</span></div>
-    <div class="tbl"><table><thead><tr><th>日期</th><th>期數</th><th>狀態</th><th>用時</th></tr></thead><tbody id="histRows"></tbody></table></div>
+    <div class="legend"><span><i class="s-done"></i>完成</span><span><i class="s-prog"></i>進行中</span><span><i></i>未玩</span></div>
+    <div class="tbl"><table><thead><tr><th>日期</th><th>課</th><th>狀態</th><th>用時</th></tr></thead><tbody id="histRows"></tbody></table></div>
     <p class="note">紀錄只存在這台裝置的這個瀏覽器裡。換手機、換瀏覽器或清除網站資料後就看不到了。</p>
   </div>
 </div>
@@ -381,8 +380,18 @@ const START = new Date(startParts[0], startParts[1] - 1, startParts[2]);
 const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
 const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const dayIndex = d => Math.round((d - START) / DAY);
-// 期數：第 0 期是試玩版（2026-10-13），隔天起為正式的第 1 期
-const issueNo = d => dayIndex(d);
+// 課名：這個版本全部屬於第一學期；2026-10-13 是試玩，隔天起為第一課、第二課……
+const TERM = '第一學期';
+function zhNum(n) {
+  const D = '零一二三四五六七八九';
+  if (n < 10) return D[n];
+  if (n < 20) return '十' + (n % 10 ? D[n % 10] : '');
+  if (n < 100) return D[Math.floor(n / 10)] + '十' + (n % 10 ? D[n % 10] : '');
+  const h = Math.floor(n / 100), r = n % 100;
+  return D[h] + '百' + (r === 0 ? '' : r < 10 ? '零' + D[r] : (r < 20 ? '一' : '') + zhNum(r));
+}
+const lessonName = d => { const n = dayIndex(d); return n === 0 ? '試玩' : `第${zhNum(n)}課`; };
+const fullName = d => `${TERM} ${lessonName(d)}`;
 const WEEK = '日月火水木金土';
 
 let date, P, answer, words, cellWords, numAt, order;
@@ -434,9 +443,9 @@ function load(d) {
   cur = first.cells.find(ci => !entries[ci]) ?? first.cells[0]; dir = first.d;
 
   const t = today();
-  $('dateLabel').innerHTML = `<span class="y">${d.getFullYear()}-</span>${fmt(d).slice(5)}（${WEEK[d.getDay()]}）`;
-  $('noLabel').textContent = `第 ${issueNo(d)} 期`;
-  $('noTag').textContent = [issueNo(d) === 0 ? '試玩' : '', fmt(d) === fmt(t) ? '今日' : ''].filter(Boolean).join('・');
+  $('dateLabel').textContent = `${fmt(d)}（${WEEK[d.getDay()]}）`;
+  $('noLabel').textContent = TERM;
+  $('noTag').textContent = lessonName(d) + (fmt(d) === fmt(t) ? '・今日' : '');
   $('prev').disabled = d <= START;
   $('next').disabled = d >= t;
   if (location.hash.slice(1) !== fmt(d)) { try { history.replaceState(null, '', '#' + fmt(d)); } catch {} }
@@ -704,13 +713,14 @@ function renderResult(scroll) {
       <p class="wclue">提示：${clue}</p>
     </li>`;
   }).join('');
-  box.innerHTML = `<h2>${usedReveal ? 'おつかれさま！' : 'よくできました！'}</h2>
-    <p class="sub">${fmt(date)} 第 ${issueNo(date)} 期 · 用時 ${ts}${usedReveal ? ' · 有使用提示' : ''}</p>
+  const hints = revealed.size;  // 每揭露一格答案算一次
+  box.innerHTML = `<h2>${hints ? 'おつかれさま！' : 'よくできました！'}</h2>
+    <p class="sub">${fmt(date)} ${fullName(date)} · 用時 ${ts} · ${hints ? `使用提示 ${hints} 次` : '沒有使用提示'}</p>
     <div class="acts"><button id="bCopy">複製成績</button><button class="ghost" id="bHide">收起單字表</button></div>
     <div id="wordTbl"><p class="wsum">本期 ${order.length} 個單字，其中 N4 ${n4} 個。每個單字附上例句與文法點，順便複習。</p><ul class="wlist">${rows}</ul></div>`;
   box.hidden = false;
   $('bCopy').onclick = () => {
-    const text = `毎日クロスワード ${fmt(date)}（第 ${issueNo(date)} 期）${usedReveal ? '完成（有提示）' : '✓'} ${ts}`;
+    const text = `毎日クロスワード ${fmt(date)}（${fullName(date)}）✓ ${ts}${hints ? `・提示 ${hints} 次` : ''}`;
     const ok = () => toast('已複製');
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok, () => toast(text)); else toast(text);
   };
@@ -821,8 +831,8 @@ function lock() {
     const resumed = currentElapsed() > 0 || entries.some(Boolean);
     $('coverTitle').textContent = resumed ? '暫停中' : '準備好了嗎？';
     $('coverSub').textContent = resumed
-      ? `第 ${issueNo(date)} 期・已用時 ${fmtTime(Math.floor(currentElapsed() / 1000))}`
-      : `第 ${issueNo(date)} 期・共 ${words.length} 個單字・按下開始後計時`;
+      ? `${fullName(date)}・已用時 ${fmtTime(Math.floor(currentElapsed() / 1000))}`
+      : `${fullName(date)}・共 ${words.length} 個單字・按下開始後計時`;
     $('bStart').textContent = resumed ? '繼續' : '開始';
   }
   renderTimer();
@@ -855,13 +865,13 @@ function allRecords() {
   }
   return out.sort((a, b) => a.date < b.date ? 1 : -1);
 }
-const statusOf = r => r.done ? (r.ur ? 'help' : 'done') : 'prog';
-const STATUS_TXT = { done: '完成', help: '完成（有提示）', prog: '進行中' };
+const statusOf = r => r.done ? 'done' : 'prog';
+const STATUS_TXT = { done: '完成', prog: '進行中' };
 function parseD(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function renderHistory() {
   const recs = allRecords();
   const map = Object.fromEntries(recs.map(r => [r.date, r]));
-  const clean = recs.filter(r => r.done && !r.ur);
+  const clean = recs.filter(r => r.done);
   const solved = recs.filter(r => r.done);
   const avg = clean.length ? Math.round(clean.reduce((a, r) => a + r.t, 0) / clean.length / 1000) : null;
   const best = clean.length ? Math.min(...clean.map(r => Math.floor(r.t / 1000))) : null;
@@ -873,7 +883,7 @@ function renderHistory() {
   $('stats').innerHTML = [
     [solved.length, '完成題數'],
     [streak + ' 天', '連續完成'],
-    [avg === null ? '—' : fmtTime(avg), '平均用時（無提示）'],
+    [avg === null ? '—' : fmtTime(avg), '平均用時'],
     [best === null ? '—' : fmtTime(best), '最快紀錄'],
   ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
 
@@ -897,7 +907,7 @@ function renderHistory() {
   $('cal').innerHTML = html;
   $('histRows').innerHTML = recs.length ? recs.map(r => {
     const s = statusOf(r);
-    return `<tr data-d="${r.date}"><td>${r.date}</td><td>第 ${issueNo(parseD(r.date))} 期</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
+    return `<tr data-d="${r.date}"><td>${r.date}</td><td>${lessonName(parseD(r.date))}</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
   }).join('') : '<tr><td colspan="4" class="empty">還沒有紀錄，先去玩今天的題目吧！</td></tr>';
 }
 function openHistory() { if (playing && !done) lock(); renderHistory(); $('hist').hidden = false; $('histClose').focus(); }
