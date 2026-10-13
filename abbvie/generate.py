@@ -1,10 +1,14 @@
 """Build one 12x12 English crossword from words.txt -> puzzle.js"""
 import json, random, sys
 
-N = 12
-ATTEMPTS = 6000
+N = int(sys.argv[1]) if len(sys.argv) > 1 else 12
+ATTEMPTS = 20000
 MAX_ABBR = 6
-MUST = {"HUMIRA", "SKYRIZI", "RINVOQ", "PLACEBO", "BOTOX", "PROTOCOL", "VENCLEXTA", "IMBRUVICA"}  # 希望盡量出現的字  # 三個字母的縮寫最多幾個
+MUST = {"ABBVIE", "PIPELINE", "HUMIRA", "SKYRIZI", "RINVOQ", "IMBRUVICA", "VENCLEXTA", "QULIPTA", "LINZESS",
+        "PLACEBO", "ENROLLMENT", "AUDIT", "VISIT", "FDA", "TNF", "ADC",
+        "PROTOCOL", "CONSENT", "ENDPOINT", "BOTOX", "ALLERGAN"}  # 使用者指定的字
+ONLY_MUST = True  # 只用指定的字出題
+TOPK = 5
 
 
 def load(path):
@@ -61,7 +65,7 @@ def build(rng, words):
         if len(g) == 3:
             abbr[0] += 1
 
-    first = next(i for i, w in enumerate(words) if w["a"] == "ABBVIE")  # 公司名一定要出現
+    first = rng.choice([i for i, w in enumerate(words) if len(w["a"]) >= 6])
     L = len(words[first]["a"])
     if rng.random() < .5:
         place(first, rng.randint(3, 8), rng.randint(0, N - L), 0)
@@ -94,7 +98,7 @@ def build(rng, words):
         if not cands:
             break
         cands.sort(reverse=True)
-        _, i, r, c, d = cands[rng.randint(0, min(2, len(cands) - 1))]
+        _, i, r, c, d = cands[rng.randint(0, min(TOPK, len(cands) - 1))]
         place(i, r, c, d)
 
     filled = sum(1 for r in range(N) for c in range(N) if grid[r][c])
@@ -105,12 +109,17 @@ def build(rng, words):
     prod = sum(1 for i, *_ in placed if words[i]["cat"] == "product")
     trial = sum(1 for i, *_ in placed if words[i]["cat"] == "trial")
     score = filled + crossings * 1.5 - (N - rows) * 8 - (N - cols) * 8 + min(prod, 8) * 3 + min(trial, 8) * 2 \
-        + (5 if "ABBVIE" in names else 0) + len(cats) * 2 + len(MUST & names) * 6 + len(placed) * 2
+        + (5 if "ABBVIE" in names else 0) + len(cats) * 2 + len(MUST & names) * 30 + len(placed) * 2
     return score, grid, placed
 
 
 def main():
     words = load("words.txt")
+    if ONLY_MUST:
+        words = [w for w in words if w["a"] in MUST]
+        missing = MUST - {w["a"] for w in words}
+        if missing:
+            sys.exit("words.txt 裡找不到：" + "、".join(sorted(missing)))
     rng = random.Random(20261013)
     best = None
     for _ in range(ATTEMPTS):
@@ -133,4 +142,5 @@ def main():
     print(", ".join(w["a"] for w in out["w"]), file=sys.stderr)
 
 
-main()
+if __name__ == "__main__":
+    main()

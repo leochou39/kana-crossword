@@ -60,14 +60,16 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 .cover .go { height: 44px; border: 0; background: var(--indigo); color: var(--sheet); font-size: 17px; font-weight: 700; padding: 0 36px; border-radius: 999px; letter-spacing: .04em; }
 
 .gridbox { position: relative; container-type: inline-size; }
-.grid { display: grid; grid-template-columns: repeat(12, 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
-.cell { position: relative; aspect-ratio: 1; background: var(--sheet); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 5.2cqw; line-height: 1; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(var(--n), 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.cell { position: relative; aspect-ratio: 1; background: var(--sheet); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: calc(62cqw / var(--n)); line-height: 1; cursor: pointer; }
 .cell.blk { background: var(--block); cursor: default; }
-.cell .n { position: absolute; top: 1px; left: 2px; font-weight: 500; font-size: 1.9cqw; line-height: 1; color: var(--ink-soft); }
+.cell .n { position: absolute; top: 1px; left: 2px; font-weight: 500; font-size: calc(23cqw / var(--n)); line-height: 1; color: var(--ink-soft); }
 .cell.inword { background: var(--indigo-wash); }
 .cell.cur { background: var(--active); }
 .cell.wrong .ch { color: var(--wrong); }
 .cell.rv .ch { color: var(--indigo); }
+.cell.given { background: var(--indigo-wash); }
+.cell.given .ch { color: var(--indigo); }
 .solved .cell:not(.blk) { animation: pop .5s ease both; }
 @keyframes pop { 50% { background: var(--indigo-wash); } }
 @media (prefers-reduced-motion: reduce) { .solved .cell:not(.blk) { animation: none; } }
@@ -75,7 +77,7 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 
 .clue-bar { display: flex; gap: 10px; align-items: center; background: var(--indigo); color: var(--sheet); border-radius: 0 0 var(--radius) var(--radius); padding: 9px 12px; min-height: 56px; }
 .clue-bar .tag { font-weight: 700; font-size: 14px; white-space: nowrap; }
-.clue-bar .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35; }
+.clue-bar .txt { flex: 1; min-width: 0; font-size: 14px; line-height: 1.35; }
 .clue-bar .arr { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .85; flex: none; }
 
 .keys { margin-top: 12px; display: grid; gap: 5px; }
@@ -111,14 +113,6 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 .result .acts { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-bottom: 14px; }
 .result .acts button { height: 36px; display: inline-flex; align-items: center; border: 1px solid var(--indigo); background: var(--indigo); color: var(--sheet); border-radius: var(--radius); padding: 0 14px; font-size: 13px; }
 .result .acts button.ghost { background: transparent; color: var(--indigo); }
-.wlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; text-align: left; }
-.wcard { border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; background: var(--paper); min-width: 0; }
-.wh { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-.wno { font-size: 12px; color: var(--ink-soft); }
-.wa { font-weight: 700; font-size: 17px; letter-spacing: .04em; }
-.cat { font-size: 11px; padding: 0 6px; border-radius: 3px; background: var(--indigo); color: var(--sheet); }
-.winfo { margin: 6px 0 0; font-family: var(--font-tc); font-size: 14px; }
-.wclue { margin: 6px 0 0; font-size: 12px; color: var(--ink-soft); border-top: 1px dashed var(--rule); padding-top: 5px; }
 
 .side-foot { margin-top: 26px; display: grid; gap: 18px; }
 .settings label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; }
@@ -191,7 +185,7 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
           <ul>
             <li>Tap a square to select it; tap again to switch between across and down.</li>
             <li>Wrong letters turn red right away. Each revealed letter counts as one hint.</li>
-            <li>When you finish, every answer is explained in Chinese.</li>
+            <li>ABBVIE is already filled in to get you started.</li>
           </ul>
         </div>
       </div>
@@ -205,12 +199,12 @@ header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 <script>
 (() => {
 const $ = id => document.getElementById(id);
-const N = PUZZLE.n, KEY = 'abbvie-xw';
+// 進度的儲存鍵帶上題目內容的雜湊，換題目時不會沿用舊進度
+const N = PUZZLE.n, KEY = 'abbvie-xw2-' + [...PUZZLE.g].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7).toString(36);
 const store = {
   get() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } },
   set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {} },
 };
-const CAT = { company: 'Company', product: 'Product', trial: 'Clinical trial', science: 'Science' };
 
 const answer = [...PUZZLE.g];
 const words = PUZZLE.w.map((w, wi) => ({ ...w, wi, cells: [...w.a].map((_, i) => w.d === 0 ? w.r * N + w.c + i : (w.r + i) * N + w.c) }));
@@ -223,17 +217,24 @@ for (let i = 0; i < N * N; i++) {
   if (starts.length) { numAt[i] = ++n; starts.forEach(w => w.num = n); }
 }
 const order = [...words].sort((a, b) => a.d - b.d || a.num - b.num);
+// 開局就幫玩家填好的字（ABBVIE），不能修改、也不算提示
+const given = new Set(words.filter(w => w.a === PUZZLE.given).flatMap(w => w.cells));
+const fillGiven = () => given.forEach(i => entries[i] = answer[i]);
+const locked = i => given.has(i) || revealed.has(i);
 
 const saved = store.get() || {};
 let entries = saved.e && saved.e.length === N * N ? saved.e : Array(N * N).fill('');
 let revealed = new Set(saved.rv || []);
 let elapsed = saved.t || 0, done = !!saved.done, ticking = false, tickStart = 0, playing = false;
-let cur = order[0].cells[0], dir = order[0].d;
+fillGiven();
+const firstOpen = order.find(w => w.cells.some(ci => !given.has(ci))) || order[0];
+let cur = firstOpen.cells.find(ci => !given.has(ci)) ?? firstOpen.cells[0], dir = firstOpen.d;
 let opts = { keys: matchMedia('(pointer: coarse)').matches };
 try { Object.assign(opts, JSON.parse(localStorage.getItem(KEY + ':opts')) || {}); } catch {}
 
 /* ---------- build ---------- */
 const g = $('grid');
+g.style.setProperty('--n', N);
 for (let i = 0; i < N * N; i++) {
   const el = document.createElement('div');
   el.className = 'cell' + (answer[i] === '#' ? ' blk' : '');
@@ -276,6 +277,7 @@ function render() {
     el.classList.toggle('cur', i === cur);
     el.classList.toggle('inword', inW.has(i) && i !== cur);
     el.classList.toggle('rv', revealed.has(i));
+    el.classList.toggle('given', given.has(i));
     el.classList.toggle('wrong', !!entries[i] && entries[i] !== answer[i]);
     el.querySelector('.ch').textContent = entries[i];
   });
@@ -300,7 +302,7 @@ function save() { store.set({ e: entries, rv: [...revealed], t: currentElapsed()
 
 /* ---------- movement & editing ---------- */
 function setCur(i, d) { cur = i; if (d !== undefined) dir = d; if (cellWords[cur][dir] < 0) dir = 1 - dir; render(); }
-function gotoWord(w) { setCur(w.cells.find(ci => !entries[ci]) ?? w.cells[0], w.d); }
+function gotoWord(w) { setCur(w.cells.find(ci => !entries[ci]) ?? w.cells.find(ci => !given.has(ci)) ?? w.cells[0], w.d); }
 function stepWord(delta) {
   let k = order.indexOf(curWord());
   for (let t = 0; t < order.length; t++) { k = (k + delta + order.length) % order.length; if (!wordOK(order[k])) break; }
@@ -314,13 +316,18 @@ function advance() {
 }
 function typeLetter(ch) {
   if (done || !playing) return;
-  if (!revealed.has(cur)) entries[cur] = ch.toUpperCase();
-  advance(); afterEdit();
+  const w = curWord();
+  while (given.has(cur) && w.cells.indexOf(cur) < w.cells.length - 1) cur = w.cells[w.cells.indexOf(cur) + 1];
+  if (!locked(cur)) entries[cur] = ch.toUpperCase();
+  advance();
+  const w2 = curWord();
+  while (given.has(cur) && w2.cells.indexOf(cur) < w2.cells.length - 1) cur = w2.cells[w2.cells.indexOf(cur) + 1];
+  afterEdit();
 }
 function backspace() {
   if (done || !playing) return;
-  if (entries[cur] && !revealed.has(cur)) entries[cur] = '';
-  else { const w = curWord(), k = w.cells.indexOf(cur); if (k > 0) { cur = w.cells[k - 1]; if (!revealed.has(cur)) entries[cur] = ''; } }
+  if (entries[cur] && !locked(cur)) entries[cur] = '';
+  else { const w = curWord(), k = w.cells.indexOf(cur); if (k > 0) { cur = w.cells[k - 1]; if (!locked(cur)) entries[cur] = ''; } }
   afterEdit();
 }
 function moveArrow(dr, dc) {
@@ -347,7 +354,7 @@ function lock() {
   const show = !done;
   $('cover').hidden = !show;
   $('desk').classList.toggle('locked', show);
-  const resumed = elapsed > 0 || entries.some(Boolean);
+  const resumed = elapsed > 0 || entries.some((e, i) => e && !given.has(i));
   $('coverTitle').textContent = resumed ? 'Paused' : 'Ready?';
   $('coverSub').textContent = resumed ? `Time so far ${fmtTime(Math.floor(elapsed / 1000))}` : `${words.length} words · the clock starts when you press Start`;
   $('bStart').textContent = resumed ? 'Resume' : 'Start';
@@ -368,21 +375,14 @@ function renderResult(scroll) {
   const box = $('result');
   if (!done) { box.hidden = true; return; }
   const ts = fmtTime(Math.floor(elapsed / 1000)), hints = revealed.size;
-  const cards = order.map(w => `<li class="wcard">
-      <div class="wh"><span class="wno">${w.num} ${w.d ? 'Down' : 'Across'}</span><span class="wa">${w.a}</span><span class="cat">${CAT[w.cat]}</span></div>
-      <p class="winfo">${w.info}</p>
-      <p class="wclue">Clue: ${w.clue}</p>
-    </li>`).join('');
   box.innerHTML = `<h2>${hints ? 'Nice work!' : 'Perfect solve!'}</h2>
     <p class="sub">Time ${ts} · ${hints ? `${hints} letter${hints > 1 ? 's' : ''} revealed` : 'no hints used'}</p>
-    <div class="acts"><button id="bCopy">Copy result</button><button class="ghost" id="bHide">Hide answers</button></div>
-    <ul class="wlist" id="wlist">${cards}</ul>`;
+    <div class="acts"><button id="bCopy">Copy result</button></div>`;
   box.hidden = false;
   $('bCopy').onclick = () => {
     const text = `AbbVie Crossword ✓ ${ts}${hints ? ` · ${hints} hints` : ''}`;
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast('Copied'), () => toast(text)); else toast(text);
   };
-  $('bHide').onclick = () => { const l = $('wlist'); l.hidden = !l.hidden; $('bHide').textContent = l.hidden ? 'Show answers' : 'Hide answers'; };
   if (scroll) box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
 let toastTimer;
@@ -427,7 +427,7 @@ $('bLetter').onclick = () => { if (!done && playing) reveal([cur]); focusInput()
 $('bWord').onclick = () => { if (!done && playing) reveal(curWord().cells); focusInput(); };
 $('bAll').onclick = () => { if (!done && playing) ask('Reveal the whole puzzle?', () => reveal(answer.map((a, i) => i).filter(i => answer[i] !== '#'))); };
 $('bClear').onclick = () => ask('Clear all your progress?', () => {
-  entries = Array(N * N).fill(''); revealed = new Set(); elapsed = 0; ticking = false; done = false;
+  entries = Array(N * N).fill(''); revealed = new Set(); elapsed = 0; ticking = false; done = false; fillGiven();
   g.classList.remove('solved'); renderResult(); render(); lock();
 });
 function applyOpts() {
