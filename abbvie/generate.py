@@ -2,11 +2,10 @@
 import json, random, sys
 
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 12
-ATTEMPTS = 20000
+ATTEMPTS = 8000
 MAX_ABBR = 6
-MUST = {"ABBVIE", "PIPELINE", "HUMIRA", "SKYRIZI", "RINVOQ", "IMBRUVICA", "VENCLEXTA", "QULIPTA", "LINZESS",
-        "PLACEBO", "ENROLLMENT", "AUDIT", "VISIT", "FDA", "TNF", "ADC",
-        "PROTOCOL", "CONSENT", "ENDPOINT", "BOTOX", "ALLERGAN"}  # 使用者指定的字
+MUST = {"ABBVIE", "HUMIRA", "SKYRIZI", "RINVOQ", "VENCLEXTA", "AQUIPTA", "BOTOX", "ALLERGAN", "EPKINLY",
+        "CONSENT", "AUDIT", "VISIT", "FDA", "TNF", "ADC", "SUSAR"}  # 使用者指定的字
 ONLY_MUST = True  # 只用指定的字出題
 TOPK = 5
 
@@ -120,7 +119,7 @@ def main():
         missing = MUST - {w["a"] for w in words}
         if missing:
             sys.exit("words.txt 裡找不到：" + "、".join(sorted(missing)))
-    rng = random.Random(20261013)
+    rng = random.Random(int(sys.argv[2]) if len(sys.argv) > 2 else 20261013)
     best = None
     for _ in range(ATTEMPTS):
         res = build(rng, words)

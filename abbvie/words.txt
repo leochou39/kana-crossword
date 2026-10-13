@@ -13,11 +13,11 @@ VENCLEXTA|BCL-2 inhibitor that makes leukemia cells self-destruct|治療慢性�
 BOTOX|Nerve-signal blocker for chronic migraine, overactive bladder and wrinkles|治療慢性偏頭痛、膀胱過動、肌肉痙攣，也用於醫美除皺｜機轉：A 型肉毒桿菌素，阻斷神經釋放乙醯膽鹼｜2025 年營收約 63.7 億美元（治療用 37.7 億＋醫美用 26.0 億）|product
 VRAYLAR|Cariprazine for schizophrenia and bipolar disorder|治療思覺失調症、雙極性疾患，也用於重度憂鬱症輔助治療｜機轉：多巴胺 D3／D2 受體部分致效劑｜2025 年營收約 36.2 億美元|product
 UBRELVY|Ubrogepant: stops a migraine attack once it starts|偏頭痛發作時的急性治療｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 12.7 億美元|product
-QULIPTA|Daily CGRP-blocking pill that prevents migraine|每日服用預防偏頭痛｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 10.4 億美元|product
+AQUIPTA|Daily CGRP-blocking pill that prevents migraine|AQUIPTA（台灣品名；美國品名 Qulipta）：每日服用預防偏頭痛|product
 MAVYRET|Eight-week cure for all hepatitis C genotypes|治療各基因型的 C 型肝炎，多數病人 8 週可治癒｜機轉：NS3/4A 蛋白酶抑制劑＋NS5A 抑制劑複方｜2025 年營收約 13.2 億美元|product
 LINZESS|Linaclotide for IBS with constipation|治療便秘型大腸激躁症、慢性特發性便秘｜機轉：鳥苷酸環化酶 C 致效劑，增加腸道分泌與蠕動｜2025 年營收約 9.1 億美元|product
 ELAHERE|First ADC approved for FR-alpha positive ovarian cancer|治療葉酸受體 α 陽性、對鉑類藥物有抗藥性的卵巢癌｜機轉：抗體藥物複合體（ADC），抗體把細胞毒性藥物送進癌細胞｜2025 年營收約 6.9 億美元|product
-EPKINLY|Epcoritamab, a bispecific antibody partnered with Genmab|治療復發或難治的瀰漫性大 B 細胞淋巴瘤、濾泡性淋巴瘤｜機轉：CD3×CD20 雙特異性抗體，把 T 細胞帶到癌細胞旁攻擊｜2025 年營收約 2.7 億美元（AbbVie 認列部分）|product
+EPKINLY|Bispecific antibody that brings T cells to lymphoma cells, partnered with Genmab|治療復發或難治的瀰漫性大 B 細胞淋巴瘤、濾泡性淋巴瘤｜機轉：CD3×CD20 雙特異性抗體，把 T 細胞帶到癌細胞旁攻擊｜2025 年營收約 2.7 億美元（AbbVie 認列部分）|product
 JUVEDERM|Hyaluronic acid filler in the aesthetics portfolio|醫美用途：補充臉部容積、撫平皺紋｜機轉：交聯玻尿酸填充｜2025 年營收約 9.9 億美元|product
 SYNTHROID|Levothyroxine brand for an underactive thyroid|治療甲狀腺功能低下｜機轉：補充合成的甲狀腺素 T4｜營收未在財報中單獨列出|product
 CREON|Pancrelipase capsules that help digest food|治療胰臟外分泌功能不足（如囊性纖維化、慢性胰臟炎）｜機轉：補充胰脂肪酶、蛋白酶與澱粉酶，幫助消化｜2025 年營收約 15.1 億美元|product
@@ -79,3 +79,4 @@ CURE|What Mavyret achieves for most hepatitis C patients|治癒：Mavyret 對多
 CRA|Clinical research associate, for short|臨床研究專員|trial
 SOP|Standard operating procedure, for short|標準作業程序|trial
 DSMB|Independent board that reviews unblinded safety data (abbr.)|數據安全監測委員會|trial
+SUSAR|Serious, unexpected suspected reaction that needs expedited reporting (abbr.)|疑似未預期嚴重不良反應|trial
