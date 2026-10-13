@@ -48,10 +48,11 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .datebar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
 .datebar .nav { width: 34px; height: 34px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 18px; line-height: 1; }
 .datebar .nav:disabled { opacity: .35; cursor: default; }
-.datebar .d { text-align: center; min-width: 138px; }
-@media (max-width: 420px) { .datebar { gap: 6px; } .datebar .d { min-width: 0; } .datebar .d b { font-size: 14px; } .datebar .timer { min-width: 56px; padding-inline: 8px; } .datebar .hbtn { padding: 0 9px; } .datebar .nav { width: 30px; } }
-.datebar .d b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
-.datebar .d span { font-size: 12px; color: var(--ink-soft); }
+.datebar .d { display: flex; align-items: center; gap: 8px; }
+.datebar .d .no { display: flex; flex-direction: column; text-align: left; line-height: 1.3; }
+.datebar .d .no span { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+@media (max-width: 420px) { .datebar { gap: 5px; } .datebar .d { gap: 6px; } .datebar .d b { font-size: 14px; } .datebar .d .y { display: none; } .datebar .d .no span { font-size: 11px; } .datebar .timer { min-width: 56px; padding-inline: 8px; } .datebar .hbtn { padding: 0 9px; } .datebar .nav { width: 30px; } }
+.datebar .d b { font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .timer { font-variant-numeric: tabular-nums; font-size: 15px; padding: 6px 10px; border-radius: var(--radius); background: var(--sheet); border: 1px solid var(--rule); min-width: 70px; text-align: center; }
 .timer.done { color: var(--good); border-color: var(--good); }
 
@@ -100,7 +101,6 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .kana button:active { background: var(--ai-wash); }
 .kana button.fn { background: var(--ai-wash); font-family: var(--font-body); font-size: 15px; }
 .kana .gap { visibility: hidden; }
-.kana-romaji { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
 
 /* clue lists */
 .clues { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -217,11 +217,11 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
   <header>
     <div class="brand">
       <h1>毎日クロスワード</h1>
-      <p><span class="lv">N5–N4</span>每日一題的 10×10 日文假名填字遊戲</p>
+      <p><span class="lv">N5–N4</span>每日一題日文填字遊戲</p>
     </div>
     <div class="datebar">
       <button class="nav" id="prev" aria-label="前一天">‹</button>
-      <div class="d"><b id="dateLabel"></b><span id="noLabel"></span></div>
+      <div class="d"><b id="dateLabel"></b><span class="no"><span id="noLabel"></span><span id="noTag"></span></span></div>
       <button class="nav" id="next" aria-label="後一天">›</button>
       <button class="timer" id="timer" title="暫停"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/></svg><span id="timerTxt">0:00</span></button>
       <button class="hbtn" id="bHist">紀錄</button>
@@ -250,6 +250,11 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
         <span class="txt" id="cbTxt"></span>
         <button class="arr" id="cbNext" aria-label="下一題">›</button>
       </div>
+      </div>
+      <div id="kanaWrap">
+        <div class="kana" id="kana"></div>
+      </div>
+      <div class="board-play">
       <div class="tools">
         <button id="bLetter">提示一格</button>
         <button id="bWord">顯示整個詞</button>
@@ -262,10 +267,6 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
         <button id="confirmYes">確定</button>
         <button id="confirmNo">取消</button>
       </div>
-      </div>
-      <div id="kanaWrap">
-        <div class="kana" id="kana"></div>
-        <div class="kana-romaji">也可以直接用鍵盤打羅馬字（ka → か），或開日文輸入法打平假名後按 Enter。</div>
       </div>
     </div>
 
@@ -360,6 +361,8 @@ const START = new Date(startParts[0], startParts[1] - 1, startParts[2]);
 const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
 const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const dayIndex = d => Math.round((d - START) / DAY);
+// 期數：第 0 期是試玩版（2026-10-13），隔天起為正式的第 1 期
+const issueNo = d => dayIndex(d);
 const WEEK = '日月火水木金土';
 
 let date, P, answer, words, cellWords, numAt, order;
@@ -411,8 +414,9 @@ function load(d) {
   cur = first.cells.find(ci => !entries[ci]) ?? first.cells[0]; dir = first.d;
 
   const t = today();
-  $('dateLabel').textContent = `${fmt(d)}（${WEEK[d.getDay()]}）`;
-  $('noLabel').textContent = `第 ${dayIndex(d) + 1} 期${fmt(d) === fmt(t) ? '・今日' : ''}`;
+  $('dateLabel').innerHTML = `<span class="y">${d.getFullYear()}-</span>${fmt(d).slice(5)}（${WEEK[d.getDay()]}）`;
+  $('noLabel').textContent = `第 ${issueNo(d)} 期`;
+  $('noTag').textContent = [issueNo(d) === 0 ? '試玩' : '', fmt(d) === fmt(t) ? '今日' : ''].filter(Boolean).join('・');
   $('prev').disabled = d <= START;
   $('next').disabled = d >= t;
   if (location.hash.slice(1) !== fmt(d)) { try { history.replaceState(null, '', '#' + fmt(d)); } catch {} }
@@ -681,12 +685,12 @@ function renderResult(scroll) {
     </li>`;
   }).join('');
   box.innerHTML = `<h2>${usedReveal ? 'おつかれさま！' : 'よくできました！'}</h2>
-    <p class="sub">${fmt(date)} 第 ${dayIndex(date) + 1} 期 · 用時 ${ts}${usedReveal ? ' · 有使用提示' : ''}</p>
+    <p class="sub">${fmt(date)} 第 ${issueNo(date)} 期 · 用時 ${ts}${usedReveal ? ' · 有使用提示' : ''}</p>
     <div class="acts"><button id="bCopy">複製成績</button><button class="ghost" id="bHide">收起單字表</button></div>
     <div id="wordTbl"><p class="wsum">本期 ${order.length} 個單字，其中 N4 ${n4} 個。每個單字附上例句與文法點，順便複習。</p><ul class="wlist">${rows}</ul></div>`;
   box.hidden = false;
   $('bCopy').onclick = () => {
-    const text = `毎日クロスワード ${fmt(date)}（第 ${dayIndex(date) + 1} 期）${usedReveal ? '完成（有提示）' : '✓'} ${ts}`;
+    const text = `毎日クロスワード ${fmt(date)}（第 ${issueNo(date)} 期）${usedReveal ? '完成（有提示）' : '✓'} ${ts}`;
     const ok = () => toast('已複製');
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok, () => toast(text)); else toast(text);
   };
@@ -797,8 +801,8 @@ function lock() {
     const resumed = currentElapsed() > 0 || entries.some(Boolean);
     $('coverTitle').textContent = resumed ? '暫停中' : '準備好了嗎？';
     $('coverSub').textContent = resumed
-      ? `第 ${dayIndex(date) + 1} 期・已用時 ${fmtTime(Math.floor(currentElapsed() / 1000))}`
-      : `第 ${dayIndex(date) + 1} 期・共 ${words.length} 個單字・按下開始後計時`;
+      ? `第 ${issueNo(date)} 期・已用時 ${fmtTime(Math.floor(currentElapsed() / 1000))}`
+      : `第 ${issueNo(date)} 期・共 ${words.length} 個單字・按下開始後計時`;
     $('bStart').textContent = resumed ? '繼續' : '開始';
   }
   renderTimer();
@@ -873,7 +877,7 @@ function renderHistory() {
   $('cal').innerHTML = html;
   $('histRows').innerHTML = recs.length ? recs.map(r => {
     const s = statusOf(r);
-    return `<tr data-d="${r.date}"><td>${r.date}</td><td>第 ${dayIndex(parseD(r.date)) + 1} 期</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
+    return `<tr data-d="${r.date}"><td>${r.date}</td><td>第 ${issueNo(parseD(r.date))} 期</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
   }).join('') : '<tr><td colspan="4" class="empty">還沒有紀錄，先去玩今天的題目吧！</td></tr>';
 }
 function openHistory() { if (playing && !done) lock(); renderHistory(); $('hist').hidden = false; $('histClose').focus(); }
