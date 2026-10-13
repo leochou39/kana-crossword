@@ -8,7 +8,7 @@
 <title>每日假名填字</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 /* Layout: a single working desk — board (grid, clue bar, keyboard) left, clue lists right; stacks on phones. */
 :root {
@@ -24,7 +24,7 @@
   --wrong: #C23B3B;
   --wrong-wash: #F8DCDC;
   --good: #2E7D5B;
-  --font-kana: "Klee One", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-kana: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Hiragino Sans", system-ui, sans-serif;
   --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --radius: 6px;
 }
@@ -126,6 +126,8 @@ header { display: flex; flex-wrap: wrap; align-items: end; justify-content: spac
 .clues li .no { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; padding-right: 4px; }
 .clues li .pos { font-size: 11px; color: var(--ink-soft); border: 1px solid var(--rule); border-radius: 3px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
 .clues li .len { font-size: 12px; color: var(--ink-soft); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.clues li .tr, .clue-bar .tr { margin-left: 2px; font-weight: 500; }
+.clues li .tr { color: var(--ai); }
 .clues li .kh { font-family: var(--font-kana); color: var(--ai); margin-left: 4px; }
 
 /* result + panels */
@@ -242,7 +244,6 @@ header { display: flex; flex-wrap: wrap; align-items: end; justify-content: spac
         <input id="kbd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="輸入假名">
       </div>
       <div class="tools">
-        <button id="bCheck">檢查</button>
         <button id="bLetter">提示一格</button>
         <button id="bWord">顯示這個字</button>
         <span class="sp"></span>
@@ -432,7 +433,8 @@ function clueHTML(w, withHint) {
   const [kana, written, meaning, pos, clue] = VOCAB[w.vi];
   const showK = withHint && opts.kanji && written !== kana && pos !== '外來語';
   const tag = pos === '外來語' ? '<span class="pos tag-loan">外來語</span>' : `<span class="pos">${POS[pos] || pos}</span>`;
-  return `<span class="m">${clue}</span>${tag}` + (showK ? `<span class="kh">「${written}」</span>` : '');
+  const tr = (pos === '外來語' || pos === '副詞・其他') ? `<span class="tr">（${meaning}）</span>` : '';
+  return `<span class="m">${clue}</span>${tr}${tag}` + (showK ? `<span class="kh">「${written}」</span>` : '');
 }
 function buildClues() {
   for (const [id, d] of [['across', 0], ['down', 1]]) {
@@ -644,12 +646,6 @@ function afterEdit() {
 function isSolved() { return answer.every((a, i) => a === '#' || entries[i] === a); }
 
 /* ---------- tools ---------- */
-function check() {
-  wrong = new Set();
-  answer.forEach((a, i) => { if (a !== '#' && entries[i] && entries[i] !== a) wrong.add(i); });
-  render();
-  toast(wrong.size ? `有 ${wrong.size} 格不對` : '目前填的都對！');
-}
 function reveal(cells) {
   cells.forEach(i => { if (entries[i] !== answer[i]) { entries[i] = answer[i]; revealed.add(i); wrong.delete(i); } });
   usedReveal = true;
@@ -742,7 +738,6 @@ $('prev').onclick = () => load(new Date(date.getFullYear(), date.getMonth(), dat
 $('next').onclick = () => load(new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1));
 $('cbPrev').onclick = () => { stepWord(-1); focusInput(); };
 $('cbNext').onclick = () => { stepWord(1); focusInput(); };
-$('bCheck').onclick = () => { check(); focusInput(); };
 $('bLetter').onclick = () => { if (!done) reveal([cur]); focusInput(); };
 $('bWord').onclick = () => { if (!done) reveal(curWord().cells); focusInput(); };
 $('bAll').onclick = () => { if (!done) ask('要顯示全部答案嗎？', () => reveal(answer.map((a, i) => i).filter(i => answer[i] !== '#'))); };
