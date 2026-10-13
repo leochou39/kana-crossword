@@ -1,16 +1,16 @@
 # 答案|英文提示|中文說明（完成後顯示）|類別
-ABBVIE|North Chicago drugmaker behind this whole puzzle|艾伯維：2013 年從 Abbott 分拆獨立的生技製藥公司|company
+ABBVIE|瑞士商艾伯維|艾伯維：2013 年從 Abbott 分拆獨立的生技製藥公司|company
 ABBOTT|AbbVie's parent company before the 2013 spin-off|亞培：AbbVie 的前母公司|company
-ALLERGAN|Botox maker AbbVie bought in 2020 for about $63 billion|愛力根：2020 年被 AbbVie 收購的醫美與眼科藥廠|company
+ALLERGAN|Company AbbVie bought in 2020 for about $63 billion|愛力根：2020 年被 AbbVie 收購的醫美與眼科藥廠|company
 CEREVEL|Neuroscience biotech AbbVie acquired in 2024|Cerevel：2024 年收購的神經科學生技公司|company
 CHICAGO|AbbVie's headquarters sit in North ___, Illinois|芝加哥：AbbVie 總部位於伊利諾州北芝加哥|company
 PIPELINE|Drugs still in development, collectively|研發管線：仍在開發中的藥物組合|company
-HUMIRA|Anti-TNF antibody for rheumatoid arthritis, psoriasis and Crohn's disease|治療類風濕性關節炎、乾癬、克隆氏症等自體免疫疾病｜機轉：抗 TNF-α 單株抗體，阻斷發炎訊號｜2025 年營收約 45.4 億美元（受生物相似藥競爭，年減約 26%）|product
+HUMIRA|Injectable antibody for rheumatoid arthritis, psoriasis and Crohn's disease|治療類風濕性關節炎、乾癬、克隆氏症等自體免疫疾病｜機轉：抗 TNF-α 單株抗體，阻斷發炎訊號｜2025 年營收約 45.4 億美元（受生物相似藥競爭，年減約 26%）|product
 SKYRIZI|IL-23 blocking antibody for psoriasis, Crohn's and ulcerative colitis|治療乾癬、乾癬性關節炎、克隆氏症、潰瘍性結腸炎｜機轉：抗 IL-23 單株抗體｜2025 年營收約 175.6 億美元，公司營收最高的產品|product
 RINVOQ|Once-daily JAK1 inhibitor pill for arthritis, eczema and IBD|治療類風濕性關節炎、異位性皮膚炎、潰瘍性結腸炎、克隆氏症等｜機轉：口服選擇性 JAK1 抑制劑｜2025 年營收約 83.0 億美元|product
 IMBRUVICA|BTK inhibitor pill for chronic lymphocytic leukemia|治療慢性淋巴性白血病（CLL）等 B 細胞血癌｜機轉：BTK 抑制劑，阻斷 B 細胞的存活訊號｜2025 年營收約 28.7 億美元|product
 VENCLEXTA|BCL-2 inhibitor that makes leukemia cells self-destruct|治療慢性淋巴性白血病（CLL）、急性骨髓性白血病（AML）｜機轉：BCL-2 抑制劑，讓癌細胞重新走向凋亡｜2025 年營收約 27.9 億美元|product
-BOTOX|Nerve-signal-blocking toxin for chronic migraine, overactive bladder and wrinkles|治療慢性偏頭痛、膀胱過動、肌肉痙攣，也用於醫美除皺｜機轉：A 型肉毒桿菌素，阻斷神經釋放乙醯膽鹼｜2025 年營收約 63.7 億美元（治療用 37.7 億＋醫美用 26.0 億）|product
+BOTOX|Nerve-signal blocker for chronic migraine, overactive bladder and wrinkles|治療慢性偏頭痛、膀胱過動、肌肉痙攣，也用於醫美除皺｜機轉：A 型肉毒桿菌素，阻斷神經釋放乙醯膽鹼｜2025 年營收約 63.7 億美元（治療用 37.7 億＋醫美用 26.0 億）|product
 VRAYLAR|Cariprazine for schizophrenia and bipolar disorder|治療思覺失調症、雙極性疾患，也用於重度憂鬱症輔助治療｜機轉：多巴胺 D3／D2 受體部分致效劑｜2025 年營收約 36.2 億美元|product
 UBRELVY|Ubrogepant: stops a migraine attack once it starts|偏頭痛發作時的急性治療｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 12.7 億美元|product
 QULIPTA|Daily CGRP-blocking pill that prevents migraine|每日服用預防偏頭痛｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 10.4 億美元|product
@@ -28,7 +28,7 @@ AESTHETICS|Botox Cosmetic and Juvederm belong to this business|醫學美容：Bo
 TNF|Inflammatory cytokine that Humira blocks (abbr.)|腫瘤壞死因子：Humira 阻斷的發炎因子|science
 JAK|Kinase family that Rinvoq inhibits|Janus 激酶：Rinvoq 抑制的酵素家族|science
 BTK|Bruton's ___: Imbruvica's target (abbr.)|布魯頓酪胺酸激酶：Imbruvica 的作用標靶|science
-ADC|Antibody-drug conjugate, for short|抗體藥物複合體：把藥物接在抗體上精準送到癌細胞|science
+ADC|Antibody that carries a drug straight to cancer cells (abbr.)|抗體藥物複合體：把藥物接在抗體上精準送到癌細胞|science
 ANTIBODY|Y-shaped protein; Humira is a monoclonal one|抗體：Y 字形的免疫蛋白，Humira 是單株抗體|science
 BIOSIMILAR|Near-copy of a biologic, like the ones that hit Humira in 2023|生物相似藥：生物藥的近似版本，2023 年起在美國與 Humira 競爭|science
 GENERIC|Copy of a small-molecule drug after its patent expires|學名藥：小分子藥專利到期後的仿製藥|science
@@ -40,7 +40,7 @@ ENDPOINT|Primary ___: the outcome a trial is powered to measure|試驗指標：�
 COHORT|Group of participants followed together|世代／族群：一起被追蹤的一群受試者|trial
 PHASE|Trial stage numbered I to IV|試驗分期：第一期到第四期|trial
 PROTOCOL|The study's rulebook|試驗計畫書：規定試驗怎麼進行的文件|trial
-CONSENT|Informed ___: what participants sign before joining|知情同意：受試者加入前簽署的同意書|trial
+CONSENT|What participants sign before joining a study|知情同意：受試者加入前簽署的同意書|trial
 ADVERSE|___ event: any unfavorable medical occurrence|不良（事件）：試驗中發生的任何不利醫療狀況|trial
 SPONSOR|Company that funds and is responsible for the trial|試驗委託者：出資並負責試驗的公司|trial
 INVESTIGATOR|Doctor who leads the study at a site|試驗主持人：在試驗機構負責的醫師|trial
@@ -65,7 +65,7 @@ LABEL|Approved prescribing information|仿單：核准的藥品使用說明|tria
 AMENDMENT|Protocol change made after the study starts|修正案：試驗開始後對計畫書的修改|trial
 DEVIATION|Protocol ___: not following the plan|偏離：沒有照計畫書執行|trial
 TRIAL|Clinical ___: the subject of half this puzzle|臨床試驗|trial
-FDA|US drug regulator|美國食品藥物管理局|trial
+FDA|A national drug regulator (abbr.)|美國食品藥物管理局|trial
 IRB|Ethics board that approves a study (abbr.)|人體試驗委員會|trial
 GCP|Good Clinical Practice, for short|優良臨床試驗規範|trial
 CRO|Outsourced research partner, for short|受託研究機構|trial
