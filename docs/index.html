@@ -36,6 +36,8 @@
   --yamabuki: #F4C542;    /* 山吹 active cell */
   --wrong: #C23B3B;
   --wrong-wash: #F8DCDC;
+  --cur-ink: #1B2620;     /* 目前格子（黃底）上的字 */
+  --wrong-cur: #B3261E;   /* 目前格子上的錯字 */
   --good: #2E7D5B;
   --font-kana: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Hiragino Sans", system-ui, sans-serif;
   --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
@@ -43,14 +45,14 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0F1612; --sheet: #17221B; --ink: #E4EEE7; --ink-soft: #91A698; --rule: #2C3D32;
-    --block: #050906; --ai: #7CC896; --ai-wash: #1E3A29; --yamabuki: #B8901E;
+    --paper: #0F1612; --sheet: #25332A; --ink: #E8F0EA; --ink-soft: #A3B5A9; --rule: #3A4D40;
+    --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D;
     --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #0F1612; --sheet: #17221B; --ink: #E4EEE7; --ink-soft: #91A698; --rule: #2C3D32;
-  --block: #050906; --ai: #7CC896; --ai-wash: #1E3A29; --yamabuki: #B8901E;
+  --paper: #0F1612; --sheet: #25332A; --ink: #E8F0EA; --ink-soft: #A3B5A9; --rule: #3A4D40;
+  --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D;
   --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -97,9 +99,11 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .cell .n { position: absolute; top: 2px; left: 3px; font-family: var(--font-body); font-weight: 500; font-size: 1.85cqw; line-height: 1; color: var(--ink-soft); }
 .cell.inword { background: var(--ai-wash); }
 .cell.cur { background: var(--yamabuki); }
+.cell.cur .ch, .cell.cur .n, .cell.cur .buf { color: var(--cur-ink); }
+.cell.cur.wrong .ch { color: var(--wrong-cur); }
 .cell.wrong .ch { color: var(--wrong); }
 .cell.rv .ch { color: var(--ai); }
-.cell.cur.rv .ch { color: var(--ink); }
+.cell.cur.rv .ch { color: var(--cur-ink); }
 .cell .buf { font-family: var(--font-body); font-size: 3cqw; color: var(--ink-soft); font-weight: 500; }
 .solved .cell:not(.blk) { animation: pop .5s ease both; }
 @keyframes pop { 50% { background: var(--ai-wash); } }
