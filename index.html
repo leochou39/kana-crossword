@@ -1,0 +1,870 @@
+<title>每日假名填字</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: a single working desk — board (grid, clue bar, keyboard) left, clue lists right; stacks on phones. */
+:root {
+  --paper: #F3F4F1;
+  --sheet: #FFFFFF;
+  --ink: #1C2330;
+  --ink-soft: #5B6474;
+  --rule: #D5D9DF;
+  --block: #26303F;
+  --ai: #2C4C8C;          /* 藍 indigo accent */
+  --ai-wash: #DCE4F3;
+  --yamabuki: #F4C542;    /* 山吹 active cell */
+  --wrong: #C23B3B;
+  --wrong-wash: #F8DCDC;
+  --good: #2E7D5B;
+  --font-kana: "Klee One", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161D; --sheet: #1B212B; --ink: #E7EAEF; --ink-soft: #98A1B0; --rule: #323B49;
+    --block: #07090D; --ai: #8FB0EE; --ai-wash: #253552; --yamabuki: #B8901E;
+    --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161D; --sheet: #1B212B; --ink: #E7EAEF; --ink-soft: #98A1B0; --rule: #323B49;
+  --block: #07090D; --ai: #8FB0EE; --ai-wash: #253552; --yamabuki: #B8901E;
+  --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 48px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ai); outline-offset: 2px; }
+
+/* header */
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; }
+.brand h1 { font-family: var(--font-kana); font-weight: 600; font-size: 28px; line-height: 1.1; margin: 0; letter-spacing: .04em; }
+.brand p { margin: 4px 0 0; color: var(--ink-soft); font-size: 13px; }
+.brand .lv { display: inline-block; border: 1px solid var(--ai); color: var(--ai); border-radius: 3px; padding: 0 5px; font-size: 11px; letter-spacing: .06em; margin-right: 6px; vertical-align: 1px; }
+.datebar { display: flex; align-items: center; gap: 8px; }
+.datebar .nav { width: 34px; height: 34px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 18px; line-height: 1; }
+.datebar .nav:disabled { opacity: .35; cursor: default; }
+.datebar .d { text-align: center; min-width: 138px; }
+.datebar .d b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+.datebar .d span { font-size: 12px; color: var(--ink-soft); }
+.timer { font-variant-numeric: tabular-nums; font-size: 15px; padding: 6px 10px; border-radius: var(--radius); background: var(--sheet); border: 1px solid var(--rule); min-width: 70px; text-align: center; }
+.timer.done { color: var(--good); border-color: var(--good); }
+
+/* main layout */
+.desk { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 820px) { .desk { grid-template-columns: minmax(0, 1fr); } .board { max-width: 520px; margin: 0 auto; width: 100%; } }
+
+.clue-bar { display: flex; gap: 10px; align-items: center; background: var(--ai); color: var(--sheet); border-radius: var(--radius) var(--radius) 0 0; padding: 9px 12px; min-height: 52px; }
+:root[data-theme="dark"] .clue-bar { color: #10151C; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .clue-bar { color: #10151C; } }
+.clue-bar .tag { font-family: var(--font-kana); font-weight: 600; font-size: 14px; white-space: nowrap; opacity: .9; }
+.clue-bar .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35; }
+.clue-bar .pos { font-size: 11px; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; margin-left: 6px; opacity: .8; white-space: nowrap; }
+.clue-bar .len { font-size: 12px; margin-left: 6px; opacity: .8; }
+.clue-bar .kh { font-family: var(--font-kana); margin-left: 6px; }
+.clue-bar .arr { width: 30px; height: 30px; border-radius: 50%; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .85; flex: none; }
+
+.gridbox { position: relative; container-type: inline-size; }
+.grid { display: grid; grid-template-columns: repeat(10, 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.cell { position: relative; aspect-ratio: 1; background: var(--sheet); display: flex; align-items: center; justify-content: center; font-family: var(--font-kana); font-weight: 600; font-size: 5.6cqw; line-height: 1; cursor: pointer; }
+.cell.blk { background: var(--block); cursor: default; }
+.cell .n { position: absolute; top: 2px; left: 3px; font-family: var(--font-body); font-weight: 500; font-size: 1.85cqw; line-height: 1; color: var(--ink-soft); }
+.cell.inword { background: var(--ai-wash); }
+.cell.cur { background: var(--yamabuki); }
+.cell.wrong .ch { color: var(--wrong); }
+.cell.wrong::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent 47%, var(--wrong) 48%, var(--wrong) 52%, transparent 53%); opacity: .5; pointer-events: none; }
+.cell.rv .ch { color: var(--ai); }
+.cell.cur.rv .ch { color: var(--ink); }
+.cell .buf { font-family: var(--font-body); font-size: 3cqw; color: var(--ink-soft); font-weight: 500; }
+.solved .cell:not(.blk) { animation: pop .5s ease both; }
+@keyframes pop { 50% { background: var(--ai-wash); } }
+@media (prefers-reduced-motion: reduce) { .solved .cell:not(.blk) { animation: none; } }
+
+#kbd { position: absolute; width: 10%; height: 10%; opacity: 0; border: 0; padding: 0; font-size: 16px; background: transparent; color: transparent; caret-color: transparent; z-index: 2; pointer-events: none; }
+#kbd.composing { opacity: 1; width: auto; min-width: 20%; color: var(--ink); background: var(--sheet); border: 2px solid var(--ai); font-family: var(--font-kana); padding: 0 4px; }
+
+.tools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tools button { border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 6px 11px; font-size: 13px; }
+.tools button:hover { border-color: var(--ai); }
+.tools .sp { flex: 1; }
+.tools .danger:hover { border-color: var(--wrong); color: var(--wrong); }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 10px; background: var(--wrong-wash); border-radius: var(--radius); font-size: 13px; }
+.confirm button { border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 4px 10px; font-size: 13px; }
+
+/* kana keyboard */
+.kana { margin-top: 12px; display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
+.kana button { height: 40px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-family: var(--font-kana); font-weight: 600; font-size: 17px; padding: 0; touch-action: manipulation; }
+.kana button:active { background: var(--ai-wash); }
+.kana button.fn { background: var(--ai-wash); font-family: var(--font-body); font-size: 15px; }
+.kana .gap { visibility: hidden; }
+.kana-romaji { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
+
+/* clue lists */
+.clues { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 1000px) and (min-width: 821px) { .clues { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .clues { grid-template-columns: 1fr; } }
+.clues section { min-width: 0; }
+.clues h2 { font-family: var(--font-kana); font-weight: 600; font-size: 17px; margin: 0 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); display: flex; justify-content: space-between; align-items: baseline; }
+.clues h2 small { font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--ink-soft); }
+.clues ol { list-style: none; margin: 0; padding: 0; }
+.clues li { display: grid; grid-template-columns: 26px 1fr; gap: 4px; padding: 5px 6px; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1.45; }
+.clues li:hover { background: var(--ai-wash); }
+.clues li.on { background: var(--ai-wash); box-shadow: inset 3px 0 0 var(--ai); }
+.clues li.alt { box-shadow: inset 3px 0 0 var(--rule); }
+.clues li.ok { color: var(--ink-soft); }
+.clues li.ok .m { text-decoration: line-through; text-decoration-color: var(--rule); }
+.clues li .no { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; padding-right: 4px; }
+.clues li .pos { font-size: 11px; color: var(--ink-soft); border: 1px solid var(--rule); border-radius: 3px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
+.clues li .len { font-size: 12px; color: var(--ink-soft); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.clues li .kh { font-family: var(--font-kana); color: var(--ai); margin-left: 4px; }
+
+/* result + panels */
+.result { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; margin-bottom: 22px; }
+.result h2 { font-family: var(--font-kana); font-weight: 600; margin: 0 0 4px; font-size: 22px; }
+.result .sub { color: var(--ink-soft); margin: 0 0 12px; font-size: 14px; }
+.result .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.result .acts button { border: 1px solid var(--ai); background: var(--ai); color: var(--sheet); border-radius: var(--radius); padding: 6px 12px; font-size: 13px; }
+.result .acts button.ghost { background: transparent; color: var(--ai); }
+.tbl { overflow-x: auto; }
+.tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.tbl th, .tbl td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.tbl td.m { white-space: normal; min-width: 140px; }
+.tbl th { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+.tbl .k { font-family: var(--font-kana); font-weight: 600; font-size: 16px; }
+
+.side-foot { margin-top: 26px; display: grid; gap: 18px; }
+.settings { display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 14px; }
+.settings label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.howto { font-size: 13.5px; color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 16px; }
+.howto h3 { margin: 0 0 6px; font-size: 14px; color: var(--ink); }
+.howto ul { margin: 0; padding-left: 18px; }
+.howto li { margin: 2px 0; }
+.howto code { font-family: var(--font-kana); color: var(--ink); background: var(--ai-wash); padding: 0 4px; border-radius: 3px; }
+.tag-loan { color: var(--sheet) !important; background: var(--ai); border-color: var(--ai) !important; }
+.clue-bar .tag-loan { background: var(--sheet); color: var(--ai) !important; opacity: 1 !important; }
+
+/* start cover */
+.desk { position: relative; }
+.desk.locked .board-play, .desk.locked .clues { filter: blur(9px); opacity: .45; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.cover { position: absolute; z-index: 5; left: 0; right: 0; top: 0; display: flex; justify-content: center; padding-top: clamp(40px, 14vw, 120px); pointer-events: none; }
+.cover .card { pointer-events: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 24px 20px; width: min(340px, 100%); text-align: center; box-shadow: 0 12px 40px rgba(20, 30, 50, .18); }
+.cover h2 { font-family: var(--font-kana); font-weight: 600; font-size: 24px; margin: 0 0 4px; }
+.cover p { margin: 0 0 16px; color: var(--ink-soft); font-size: 14px; }
+.cover .go { border: 0; background: var(--ai); color: var(--sheet); font-size: 17px; font-weight: 700; padding: 10px 34px; border-radius: 999px; letter-spacing: .1em; }
+.cover .go:hover { filter: brightness(1.08); }
+.timer { cursor: pointer; display: flex; align-items: center; gap: 6px; justify-content: center; }
+.timer svg { width: 12px; height: 12px; fill: currentColor; opacity: .7; }
+.hbtn { height: 34px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 0 12px; font-size: 14px; }
+.hbtn:hover, .timer:hover { border-color: var(--ai); }
+
+/* history */
+.hist { position: fixed; inset: 0; z-index: 20; background: rgba(12, 16, 24, .45); display: flex; justify-content: center; align-items: flex-start; padding: calc(24px + env(safe-area-inset-top, 0px)) 16px 24px; overflow-y: auto; }
+.hist .panel { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; width: min(720px, 100%); padding: 20px 20px 16px; }
+.hist .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.hist h2 { font-family: var(--font-kana); font-weight: 600; font-size: 22px; margin: 0; }
+.hist .x { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--rule); background: var(--sheet); font-size: 18px; line-height: 1; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px; }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; }
+.stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat span { font-size: 12px; color: var(--ink-soft); }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 16px; max-width: 360px; }
+.cal .h { font-size: 11px; color: var(--ink-soft); text-align: center; }
+.cal button { aspect-ratio: 1; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-size: 12px; font-variant-numeric: tabular-nums; padding: 0; position: relative; }
+.cal button:disabled { opacity: .3; cursor: default; }
+.cal button.s-done { background: var(--ai); color: var(--sheet); border-color: var(--ai); }
+.cal button.s-help { background: var(--ai-wash); border-color: var(--ai); }
+.cal button.s-prog { border-color: var(--yamabuki); border-width: 2px; }
+.cal button.today { outline: 2px solid var(--ink); outline-offset: 1px; }
+.cal .mon { grid-column: 1 / -1; font-size: 13px; font-weight: 700; margin-top: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-soft); margin: -6px 0 14px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--rule); background: var(--sheet); vertical-align: -2px; margin-right: 4px; }
+.legend i.s-done { background: var(--ai); border-color: var(--ai); }
+.legend i.s-help { background: var(--ai-wash); border-color: var(--ai); }
+.legend i.s-prog { border: 2px solid var(--yamabuki); }
+.pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--rule); white-space: nowrap; }
+.pill.s-done { background: var(--ai); color: var(--sheet); border-color: var(--ai); }
+.pill.s-help { background: var(--ai-wash); border-color: var(--ai); }
+.pill.s-prog { border-color: var(--yamabuki); }
+.hist tbody tr { cursor: pointer; }
+.hist tbody tr:hover td { background: var(--ai-wash); }
+.hist td.t { font-variant-numeric: tabular-nums; }
+.hist .note { font-size: 12px; color: var(--ink-soft); margin: 12px 0 0; }
+.hist .empty { text-align: center; color: var(--ink-soft); padding: 18px 0; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 20px; font-size: 14px; z-index: 10; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>毎日クロスワード</h1>
+      <p><span class="lv">N5–N4</span>每日一題的 10×10 日文假名填字遊戲</p>
+    </div>
+    <div class="datebar">
+      <button class="nav" id="prev" aria-label="前一天">‹</button>
+      <div class="d"><b id="dateLabel"></b><span id="noLabel"></span></div>
+      <button class="nav" id="next" aria-label="後一天">›</button>
+      <button class="timer" id="timer" title="暫停"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/></svg><span id="timerTxt">0:00</span></button>
+      <button class="hbtn" id="bHist">紀錄</button>
+    </div>
+  </header>
+
+  <div id="result" class="result" hidden></div>
+
+  <div class="desk">
+    <div class="cover" id="cover" hidden>
+      <div class="card">
+        <h2 id="coverTitle">準備好了嗎？</h2>
+        <p id="coverSub"></p>
+        <button class="go" id="bStart">開始</button>
+      </div>
+    </div>
+    <div class="board">
+      <div class="board-play">
+      <div class="clue-bar">
+        <button class="arr" id="cbPrev" aria-label="上一題">‹</button>
+        <span class="tag" id="cbTag"></span>
+        <span class="txt" id="cbTxt"></span>
+        <button class="arr" id="cbNext" aria-label="下一題">›</button>
+      </div>
+      <div class="gridbox">
+        <div class="grid" id="grid" role="grid" aria-label="填字格"></div>
+        <input id="kbd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="輸入假名">
+      </div>
+      <div class="tools">
+        <button id="bCheck">檢查</button>
+        <button id="bLetter">提示一格</button>
+        <button id="bWord">顯示這個字</button>
+        <span class="sp"></span>
+        <button id="bAll" class="danger">全部答案</button>
+        <button id="bClear" class="danger">清除</button>
+      </div>
+      <div class="confirm" id="confirm" hidden>
+        <span id="confirmTxt"></span>
+        <button id="confirmYes">確定</button>
+        <button id="confirmNo">取消</button>
+      </div>
+      </div>
+      <div id="kanaWrap">
+        <div class="kana" id="kana"></div>
+        <div class="kana-romaji">也可以直接用鍵盤打羅馬字（ka → か），或開日文輸入法打平假名後按 Enter。</div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="clues">
+        <section><h2>ヨコのカギ <small>橫向</small></h2><ol id="across"></ol></section>
+        <section><h2>タテのカギ <small>直向</small></h2><ol id="down"></ol></section>
+      </div>
+      <div class="side-foot">
+        <div class="settings">
+          <label><input type="checkbox" id="optKanji"> 顯示漢字提示</label>
+          <label><input type="checkbox" id="optKana"> 顯示假名鍵盤</label>
+        </div>
+        <div class="howto">
+          <h3>玩法</h3>
+          <ul>
+            <li>按「開始」才會顯示題目並開始計時；點計時器可以暫停。</li>
+            <li>點格子選位置，再點一次或按空白鍵切換橫向／直向；Tab 跳下一題。</li>
+            <li>拗音、促音一律寫成大字：<code>きょう</code> → <code>きよう</code>、<code>がっこう</code> → <code>がつこう</code>。</li>
+            <li>長音「ー」佔一格（羅馬字按 <code>-</code>）。標有 <code>外來語</code> 的題目答案原本是片假名，填平假名即可。</li>
+            <li>假名鍵盤上的 <code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。</li>
+            <li>題目每天午夜（你所在的時區）更新，可以用 ‹ › 回顧過去的題目，進度會自動儲存在這台裝置。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="hist" id="hist" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="histTitle">
+    <div class="top"><h2 id="histTitle">遊玩紀錄</h2><button class="x" id="histClose" aria-label="關閉">×</button></div>
+    <div class="stats" id="stats"></div>
+    <div class="cal" id="cal"></div>
+    <div class="legend"><span><i class="s-done"></i>完成</span><span><i class="s-help"></i>有用提示</span><span><i class="s-prog"></i>進行中</span><span><i></i>未玩</span></div>
+    <div class="tbl"><table><thead><tr><th>日期</th><th>期數</th><th>狀態</th><th>用時</th></tr></thead><tbody id="histRows"></tbody></table></div>
+    <p class="note">紀錄只存在這台裝置的這個瀏覽器裡。換手機、換瀏覽器或清除網站資料後就看不到了。</p>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="puzzles.js"></script>
+<script>
+(() => {
+const N = 10, DAY = 86400000;
+const $ = id => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+/* ---------- kana helpers ---------- */
+const SMALL = { 'ぁ':'あ','ぃ':'い','ぅ':'う','ぇ':'え','ぉ':'お','っ':'つ','ゃ':'や','ゅ':'ゆ','ょ':'よ','ゎ':'わ' };
+function norm(ch) {
+  if (ch === '-' || ch === '－' || ch === '〜') return 'ー';
+  const o = ch.codePointAt(0);
+  if (o >= 0x30A1 && o <= 0x30F6) ch = String.fromCodePoint(o - 0x60);
+  return SMALL[ch] || ch;
+}
+const isKana = ch => /^[ぁ-ゖー]$/.test(ch);
+const toGrid = s => [...s].map(norm).join('');
+
+const DAKU = {}, HANDAKU = {};
+'かがきぎくぐけげこごさざしじすずせぜそぞただちぢつづてでとどはばひびふぶへべほぼ'.match(/../g).forEach(p => { DAKU[p[0]] = p[1]; DAKU[p[1]] = p[0]; });
+'はぱひぴふぷへぺほぽ'.match(/../g).forEach(p => { HANDAKU[p[0]] = p[1]; HANDAKU[p[1]] = p[0]; });
+'ばぱびぴぶぷべぺぼぽ'.match(/../g).forEach(p => { HANDAKU[p[0]] = p[1]; DAKU[p[1]] = p[0]; });
+
+/* ---------- romaji ---------- */
+const R = { a:'あ', i:'い', u:'う', e:'え', o:'お', nn:'ん', "n'":'ん', xn:'ん', '-':'ー',
+  shi:'し', chi:'ち', tsu:'つ', fu:'ふ', ji:'じ', wo:'を', wa:'わ', ye:'いえ',
+  xa:'あ', xi:'い', xu:'う', xe:'え', xo:'お', la:'あ', li:'い', lu:'う', le:'え', lo:'お',
+  xtu:'つ', ltu:'つ', xtsu:'つ', xya:'や', xyu:'ゆ', xyo:'よ', lya:'や', lyu:'ゆ', lyo:'よ',
+  ya:'や', yu:'ゆ', yo:'よ', fa:'ふあ', fi:'ふい', fe:'ふえ', fo:'ふお', va:'ゔあ', vu:'ゔ',
+  sha:'しや', shu:'しゆ', sho:'しよ', she:'しえ', cha:'ちや', chu:'ちゆ', cho:'ちよ', che:'ちえ',
+  ja:'じや', ju:'じゆ', jo:'じよ', je:'じえ', tsa:'つあ', thi:'てい', dhi:'でい', di:'ぢ', du:'づ' };
+const ROWS = { k:'かきくけこ', g:'がぎぐげご', s:'さしすせそ', z:'ざじずぜぞ', t:'たちつてと', d:'だぢづでど',
+  n:'なにぬねの', h:'はひふへほ', b:'ばびぶべぼ', p:'ぱぴぷぺぽ', m:'まみむめも', r:'らりるれろ' };
+for (const [c, row] of Object.entries(ROWS)) {
+  'aiueo'.split('').forEach((v, i) => { if (!R[c + v]) R[c + v] = row[i]; });
+  ['a','u','o'].forEach((v, i) => { R[c + 'y' + v] = row[1] + 'やゆよ'[i]; });
+}
+['a','u','o'].forEach((v, i) => { R['cy' + v] = 'ち' + 'やゆよ'[i]; R['jy' + v] = 'じ' + 'やゆよ'[i]; });
+R.ca = 'か'; R.cu = 'く'; R.co = 'こ'; R.ci = 'し'; R.ce = 'せ';
+const PREFIX = new Set();
+for (const k of Object.keys(R)) for (let i = 1; i <= k.length; i++) PREFIX.add(k.slice(0, i));
+const CONS = 'bcdfghjklmpqrstvwxyz';
+
+/* ---------- date / puzzle choice ---------- */
+const startParts = START_DATE.split('-').map(Number);
+const START = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const dayIndex = d => Math.round((d - START) / DAY);
+const WEEK = '日月火水木金土';
+
+let date, P, answer, words, cellWords, numAt, order;
+let entries, revealed, wrong, cur = 0, dir = 0, buf = '', lastTyped = -1;
+let elapsed = 0, ticking = false, tickStart = 0, done = false, usedReveal = false, playing = false, finAt = 0;
+let opts = Object.assign({ kanji: false, kana: matchMedia('(pointer: coarse)').matches }, store.get('kxw:opts') || {});
+
+function pickDate() {
+  const h = location.hash.slice(1);
+  const t = today();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(h)) {
+    const [y, m, d] = h.split('-').map(Number);
+    const dt = new Date(y, m - 1, d);
+    if (dt >= START && dt <= t) return dt;
+  }
+  return t < START ? START : t;
+}
+
+function load(d) {
+  stopTick();
+  saveNow();
+  date = d;
+  const idx = ((dayIndex(d) % PUZZLES.length) + PUZZLES.length) % PUZZLES.length;
+  P = PUZZLES[idx];
+  answer = [...P.g];
+  words = P.w.map(([vi, r, c, dd], wi) => {
+    const len = [...VOCAB[vi][0]].length;
+    const cells = Array.from({ length: len }, (_, i) => dd === 0 ? r * N + c + i : (r + i) * N + c);
+    return { wi, vi, r, c, d: dd, len, cells };
+  });
+  cellWords = Array.from({ length: N * N }, () => [-1, -1]);
+  words.forEach(w => w.cells.forEach(ci => cellWords[ci][w.d] = w.wi));
+  numAt = {};
+  let n = 0;
+  for (let i = 0; i < N * N; i++) {
+    const starts = words.filter(w => w.cells[0] === i);
+    if (starts.length) { n++; numAt[i] = n; starts.forEach(w => w.num = n); }
+  }
+  order = [...words].sort((a, b) => a.d - b.d || a.num - b.num);
+
+  const saved = store.get('kxw:' + fmt(d)) || {};
+  entries = saved.e && saved.e.length === N * N ? saved.e : Array(N * N).fill('');
+  revealed = new Set(saved.rv || []);
+  wrong = new Set();
+  stopTick();
+  elapsed = saved.t || 0; done = !!saved.done; usedReveal = !!saved.ur; finAt = saved.fin || 0;
+  playing = false; ticking = false; buf = ''; lastTyped = -1;
+  const first = order[0];
+  cur = first.cells.find(ci => !entries[ci]) ?? first.cells[0]; dir = first.d;
+
+  const t = today();
+  $('dateLabel').textContent = `${fmt(d)}（${WEEK[d.getDay()]}）`;
+  $('noLabel').textContent = `第 ${dayIndex(d) + 1} 期${fmt(d) === fmt(t) ? '・今日' : ''}`;
+  $('prev').disabled = d <= START;
+  $('next').disabled = d >= t;
+  if (location.hash.slice(1) !== fmt(d)) { try { history.replaceState(null, '', '#' + fmt(d)); } catch {} }
+  $('grid').classList.remove('solved');
+  hideConfirm();
+  buildGrid(); buildClues(); render(); renderResult(); renderTimer(); lock();
+}
+
+/* ---------- build DOM ---------- */
+function buildGrid() {
+  const g = $('grid');
+  g.innerHTML = '';
+  for (let i = 0; i < N * N; i++) {
+    const el = document.createElement('div');
+    el.className = 'cell' + (answer[i] === '#' ? ' blk' : '');
+    el.dataset.i = i;
+    if (answer[i] !== '#') {
+      el.setAttribute('role', 'gridcell');
+      el.innerHTML = (numAt[i] ? `<span class="n">${numAt[i]}</span>` : '') + '<span class="ch"></span>';
+    }
+    g.appendChild(el);
+  }
+}
+const POS = { '名詞':'名', '動詞':'動', 'い形容詞':'い形', 'な形容詞':'な形', '副詞・其他':'副・他', '外來語':'外來語' };
+function clueHTML(w, withHint) {
+  const [kana, written, meaning, pos, clue] = VOCAB[w.vi];
+  const showK = withHint && opts.kanji && written !== kana && pos !== '外來語';
+  const tag = pos === '外來語' ? '<span class="pos tag-loan">外來語</span>' : `<span class="pos">${POS[pos] || pos}</span>`;
+  return `<span class="m">${clue}</span>${tag}` + (showK ? `<span class="kh">「${written}」</span>` : '');
+}
+function buildClues() {
+  for (const [id, d] of [['across', 0], ['down', 1]]) {
+    const ol = $(id);
+    ol.innerHTML = '';
+    words.filter(w => w.d === d).sort((a, b) => a.num - b.num).forEach(w => {
+      const li = document.createElement('li');
+      li.dataset.w = w.wi;
+      li.innerHTML = `<span class="no">${w.num}</span><span>${clueHTML(w, true)}</span>`;
+      li.addEventListener('click', () => { gotoWord(w); focusInput(); });
+      ol.appendChild(li);
+      w.li = li;
+    });
+  }
+}
+function buildKana() {
+  const cols = ['あいうえお','かきくけこ','さしすせそ','たちつてと','なにぬねの','はひふへほ','まみむめも','や・ゆ・よ','らりるれろ','わ・・・を'];
+  const extra = ['ん', 'ー', '゛', '゜', '⌫'];
+  const k = $('kana');
+  for (let row = 0; row < 5; row++) {
+    cols.forEach(col => {
+      const ch = col[row];
+      const b = document.createElement('button');
+      if (ch === '・') { b.className = 'gap'; b.tabIndex = -1; b.setAttribute('aria-hidden', 'true'); }
+      else { b.textContent = ch; b.dataset.k = ch; }
+      k.appendChild(b);
+    });
+    const b = document.createElement('button');
+    b.textContent = extra[row]; b.dataset.k = extra[row];
+    if ('゛゜⌫'.includes(extra[row])) b.className = 'fn';
+    if (extra[row] === '⌫') b.setAttribute('aria-label', '刪除');
+    k.appendChild(b);
+  }
+  k.addEventListener('pointerdown', e => e.preventDefault());
+  k.addEventListener('click', e => {
+    const key = e.target.dataset && e.target.dataset.k;
+    if (!key || !playing) return;
+    if (key === '⌫') backspace();
+    else if (key === '゛' || key === '゜') applyMark(key === '゛' ? DAKU : HANDAKU);
+    else typeKana(key);
+  });
+}
+
+/* ---------- render ---------- */
+function curWord() { return words[cellWords[cur][dir]] || words[cellWords[cur][1 - dir]]; }
+function wordOK(w) { return w.cells.every(ci => entries[ci] === answer[ci]); }
+function render() {
+  const w = curWord();
+  const inW = new Set(w ? w.cells : []);
+  const cells = $('grid').children;
+  for (let i = 0; i < N * N; i++) {
+    if (answer[i] === '#') continue;
+    const el = cells[i];
+    el.classList.toggle('cur', i === cur);
+    el.classList.toggle('inword', inW.has(i) && i !== cur);
+    el.classList.toggle('rv', revealed.has(i));
+    el.classList.toggle('wrong', wrong.has(i));
+    const ch = el.querySelector('.ch');
+    if (i === cur && buf) { ch.innerHTML = `<span class="buf">${buf}</span>`; }
+    else ch.textContent = entries[i];
+  }
+  const other = words[cellWords[cur][1 - dir]];
+  words.forEach(x => {
+    x.li.classList.toggle('on', x === w);
+    x.li.classList.toggle('alt', x === other && x !== w);
+    x.li.classList.toggle('ok', wordOK(x));
+  });
+  if (w) {
+    $('cbTag').textContent = `${w.num} ${w.d === 0 ? 'ヨコ' : 'タテ'}`;
+    $('cbTxt').innerHTML = clueHTML(w, true);
+  }
+  placeInput();
+}
+function placeInput() {
+  const k = $('kbd');
+  k.style.left = (cur % N) * 10 + '%';
+  k.style.top = Math.floor(cur / N) * 10 + '%';
+  k.inputMode = opts.kana ? 'none' : 'text';
+}
+function scrollClue() {
+  const w = curWord();
+  if (!w || !w.li) return;
+  if (matchMedia('(min-width: 821px)').matches) w.li.scrollIntoView({ block: 'nearest' });
+}
+
+/* ---------- timer ---------- */
+function renderTimer() {
+  const t = Math.floor(currentElapsed() / 1000);
+  $('timerTxt').textContent = fmtTime(t);
+  $('timer').querySelector('svg').style.display = playing && !done ? '' : 'none';
+  $('timer').title = playing && !done ? '暫停' : '計時';
+  $('timer').classList.toggle('done', done);
+}
+const fmtTime = t => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+function currentElapsed() { return elapsed + (ticking ? Date.now() - tickStart : 0); }
+function startTick() { if (!ticking && !done) { ticking = true; tickStart = Date.now(); } }
+function stopTick() { if (ticking) { elapsed = currentElapsed(); ticking = false; } }
+setInterval(() => { if (ticking) renderTimer(); }, 500);
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing && !done) lock(); else if (document.hidden) saveNow(); });
+
+function saveNow() {
+  if (!date) return;
+  const played = done || currentElapsed() > 0 || entries.some(Boolean);
+  const key = 'kxw:' + fmt(date);
+  if (!played && !store.get(key)) return;
+  store.set(key, { e: entries, rv: [...revealed], t: currentElapsed(), done, ur: usedReveal, fin: finAt });
+}
+
+/* ---------- movement ---------- */
+function setCur(i, d) {
+  cur = i;
+  if (d !== undefined) dir = d;
+  if (cellWords[cur][dir] < 0) dir = 1 - dir;
+  buf = '';
+  render(); scrollClue();
+}
+function gotoWord(w, empty = true) {
+  const i = empty ? (w.cells.find(ci => !entries[ci]) ?? w.cells[0]) : w.cells[0];
+  setCur(i, w.d);
+}
+function stepWord(delta) {
+  const w = curWord();
+  let k = order.indexOf(w);
+  for (let n = 0; n < order.length; n++) {
+    k = (k + delta + order.length) % order.length;
+    if (!wordOK(order[k]) || n === order.length - 1) break;
+  }
+  gotoWord(order[k]);
+}
+function advance() {
+  const w = curWord();
+  const k = w.cells.indexOf(cur);
+  if (k < w.cells.length - 1) { cur = w.cells[k + 1]; }
+  else if (!isSolved()) {
+    const empty = w.cells.find(ci => !entries[ci]);
+    if (empty !== undefined) cur = empty; else { stepWord(1); return; }
+  }
+}
+function moveArrow(dr, dc) {
+  const d = dr ? 1 : 0;
+  if (d !== dir && cellWords[cur][d] >= 0) { dir = d; buf = ''; render(); scrollClue(); return; }
+  let r = Math.floor(cur / N), c = cur % N;
+  while (true) {
+    r += dr; c += dc;
+    if (r < 0 || r >= N || c < 0 || c >= N) return;
+    if (answer[r * N + c] !== '#') { setCur(r * N + c, cellWords[r * N + c][d] >= 0 ? d : 1 - d); return; }
+  }
+}
+
+/* ---------- editing ---------- */
+function writeCell(i, ch) {
+  if (revealed.has(i) || done) return false;
+  entries[i] = ch;
+  wrong.delete(i);
+  return true;
+}
+function typeKana(str) {
+  if (done) return;
+  startTick();
+  for (const raw of str) {
+    const ch = norm(raw);
+    if (!isKana(ch)) continue;
+    writeCell(cur, ch);
+    lastTyped = cur;
+    advance();
+  }
+  buf = '';
+  afterEdit();
+}
+function backspace() {
+  if (done) return;
+  if (buf) { buf = buf.slice(0, -1); render(); return; }
+  if (entries[cur] && !revealed.has(cur)) { writeCell(cur, ''); }
+  else {
+    const w = curWord(), k = w.cells.indexOf(cur);
+    if (k > 0) { cur = w.cells[k - 1]; writeCell(cur, ''); }
+  }
+  lastTyped = -1;
+  afterEdit();
+}
+function applyMark(table) {
+  if (done) return;
+  const i = lastTyped >= 0 && entries[lastTyped] ? lastTyped : cur;
+  const ch = entries[i];
+  if (ch && table[ch] && writeCell(i, table[ch])) afterEdit();
+}
+function romaji(key) {
+  if (done) return;
+  startTick();
+  buf += key;
+  let out = '';
+  while (buf) {
+    if (R[buf]) { out += R[buf]; buf = ''; break; }
+    if (buf.length >= 2 && ((buf[0] === buf[1] && CONS.includes(buf[0]) && buf[0] !== 'n') || buf.startsWith('tc'))) { out += 'つ'; buf = buf.slice(1); continue; }
+    if (buf[0] === 'n' && buf.length >= 2 && !'aiueoy'.includes(buf[1])) { out += 'ん'; buf = buf.slice(1); continue; }
+    if (PREFIX.has(buf)) break;
+    buf = buf.slice(1);
+  }
+  const keep = buf;
+  if (out) typeKana(out);
+  buf = keep;
+  render();
+}
+function afterEdit() {
+  render();
+  if (isSolved()) finish();
+  else saveNow();
+}
+function isSolved() { return answer.every((a, i) => a === '#' || entries[i] === a); }
+
+/* ---------- tools ---------- */
+function check() {
+  wrong = new Set();
+  answer.forEach((a, i) => { if (a !== '#' && entries[i] && entries[i] !== a) wrong.add(i); });
+  render();
+  toast(wrong.size ? `有 ${wrong.size} 格不對` : '目前填的都對！');
+}
+function reveal(cells) {
+  cells.forEach(i => { if (entries[i] !== answer[i]) { entries[i] = answer[i]; revealed.add(i); wrong.delete(i); } });
+  usedReveal = true;
+  startTick();
+  afterEdit();
+}
+function finish() {
+  stopTick();
+  done = true; playing = false; finAt = Date.now();
+  $('grid').classList.add('solved');
+  saveNow(); render(); renderTimer(); renderResult(true);
+}
+function renderResult(scroll) {
+  const box = $('result');
+  if (!done) { box.hidden = true; return; }
+  const ts = fmtTime(Math.floor(elapsed / 1000));
+  const rows = order.map(w => {
+    const [kana, written, meaning, , clue] = VOCAB[w.vi];
+    return `<tr><td>${w.num}${w.d ? 'タテ' : 'ヨコ'}</td><td class="k">${kana}</td><td>${written !== kana ? written : ''}</td><td class="m">${meaning}</td><td class="m">${clue}</td></tr>`;
+  }).join('');
+  box.innerHTML = `<h2>${usedReveal ? 'おつかれさま！' : 'よくできました！'}</h2>
+    <p class="sub">${fmt(date)} 第 ${dayIndex(date) + 1} 期 · 用時 ${ts}${usedReveal ? ' · 有使用提示' : ''}</p>
+    <div class="acts"><button id="bCopy">複製成績</button><button class="ghost" id="bHide">收起單字表</button></div>
+    <div class="tbl" id="wordTbl"><table><thead><tr><th>題號</th><th>讀音</th><th>寫法</th><th>意思</th><th>提示</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  box.hidden = false;
+  $('bCopy').onclick = () => {
+    const text = `毎日クロスワード ${fmt(date)}（第 ${dayIndex(date) + 1} 期）${usedReveal ? '完成（有提示）' : '✓'} ${ts}`;
+    const ok = () => toast('已複製');
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok, () => toast(text)); else toast(text);
+  };
+  $('bHide').onclick = () => { const tb = $('wordTbl'); tb.hidden = !tb.hidden; $('bHide').textContent = tb.hidden ? '展開單字表' : '收起單字表'; };
+  if (scroll) box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+let pending = null;
+function ask(text, fn) { pending = fn; $('confirmTxt').textContent = text; $('confirm').hidden = false; }
+function hideConfirm() { pending = null; $('confirm').hidden = true; }
+let toastTimer;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 1800); }
+
+/* ---------- input wiring ---------- */
+const kbd = $('kbd');
+function focusInput() { kbd.focus({ preventScroll: true }); }
+$('grid').addEventListener('pointerdown', e => {
+  const el = e.target.closest('.cell');
+  if (!el || el.classList.contains('blk')) return;
+  e.preventDefault();
+  const i = +el.dataset.i;
+  if (i === cur) setCur(i, cellWords[i][1 - dir] >= 0 ? 1 - dir : dir);
+  else setCur(i, dir);
+  focusInput();
+});
+kbd.addEventListener('keydown', e => {
+  if (!playing && !done) return;
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  let handled = true;
+  if (k === 'ArrowLeft') moveArrow(0, -1);
+  else if (k === 'ArrowRight') moveArrow(0, 1);
+  else if (k === 'ArrowUp') moveArrow(-1, 0);
+  else if (k === 'ArrowDown') moveArrow(1, 0);
+  else if (k === 'Backspace') backspace();
+  else if (k === 'Delete') { if (writeCell(cur, '')) afterEdit(); }
+  else if (k === 'Tab') stepWord(e.shiftKey ? -1 : 1);
+  else if (k === ' ') setCur(cur, cellWords[cur][1 - dir] >= 0 ? 1 - dir : dir);
+  else if (k === 'Enter') stepWord(1);
+  else if (k === 'Escape') { buf = ''; render(); }
+  else if (/^[a-zA-Z'\-]$/.test(k)) romaji(k.toLowerCase());
+  else if (k.length === 1 && isKana(norm(k))) typeKana(k);
+  else handled = false;
+  if (handled) e.preventDefault();
+});
+kbd.addEventListener('compositionstart', () => kbd.classList.add('composing'));
+kbd.addEventListener('compositionend', e => {
+  kbd.classList.remove('composing');
+  const data = e.data || kbd.value;
+  kbd.value = '';
+  if (data) typeKana(data);
+});
+kbd.addEventListener('input', e => {
+  if (e.isComposing || kbd.classList.contains('composing')) return;
+  const v = kbd.value;
+  kbd.value = '';
+  if (!v) return;
+  if (/^[a-z'\-]+$/i.test(v)) [...v.toLowerCase()].forEach(romaji);
+  else typeKana(v);
+});
+
+$('prev').onclick = () => load(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1));
+$('next').onclick = () => load(new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1));
+$('cbPrev').onclick = () => { stepWord(-1); focusInput(); };
+$('cbNext').onclick = () => { stepWord(1); focusInput(); };
+$('bCheck').onclick = () => { check(); focusInput(); };
+$('bLetter').onclick = () => { if (!done) reveal([cur]); focusInput(); };
+$('bWord').onclick = () => { if (!done) reveal(curWord().cells); focusInput(); };
+$('bAll').onclick = () => { if (!done) ask('要顯示全部答案嗎？', () => reveal(answer.map((a, i) => i).filter(i => answer[i] !== '#'))); };
+$('bClear').onclick = () => ask('要清除這一題的所有進度嗎？', () => {
+  entries = Array(N * N).fill(''); revealed = new Set(); wrong = new Set();
+  elapsed = 0; ticking = false; done = false; usedReveal = false; finAt = 0; playing = false;
+  $('grid').classList.remove('solved');
+  saveNow(); render(); renderTimer(); renderResult(); lock();
+});
+$('confirmYes').onclick = () => { const f = pending; hideConfirm(); if (f) f(); };
+$('confirmNo').onclick = hideConfirm;
+
+function applyOpts() {
+  $('optKanji').checked = opts.kanji;
+  $('optKana').checked = opts.kana;
+  $('kanaWrap').hidden = !opts.kana;
+  store.set('kxw:opts', opts);
+}
+$('optKanji').onchange = e => { opts.kanji = e.target.checked; applyOpts(); buildClues(); render(); };
+$('optKana').onchange = e => { opts.kana = e.target.checked; applyOpts(); render(); };
+window.addEventListener('hashchange', () => { const d = pickDate(); if (fmt(d) !== fmt(date)) load(d); });
+window.addEventListener('pagehide', saveNow);
+// roll over to the new puzzle at local midnight if the page stays open
+setInterval(() => { const t = today(); if (fmt(date) !== fmt(t) && $('next').disabled && t > date) { $('next').disabled = false; } }, 60000);
+
+/* ---------- start cover ---------- */
+function lock() {
+  stopTick();
+  if (playing) saveNow();
+  playing = false;
+  const show = !done;
+  $('cover').hidden = !show;
+  document.querySelector('.desk').classList.toggle('locked', show);
+  if (show) {
+    const resumed = currentElapsed() > 0 || entries.some(Boolean);
+    $('coverTitle').textContent = resumed ? '暫停中' : '準備好了嗎？';
+    $('coverSub').textContent = resumed
+      ? `第 ${dayIndex(date) + 1} 期・已用時 ${fmtTime(Math.floor(currentElapsed() / 1000))}`
+      : `第 ${dayIndex(date) + 1} 期・共 ${words.length} 個單字・按下開始後計時`;
+    $('bStart').textContent = resumed ? '繼續' : '開始';
+  }
+  renderTimer();
+}
+function unlock() {
+  playing = true;
+  $('cover').hidden = true;
+  document.querySelector('.desk').classList.remove('locked');
+  startTick(); renderTimer();
+  focusInput();
+}
+$('bStart').onclick = unlock;
+$('timer').onclick = () => { if (playing && !done) lock(); else if (!done) unlock(); };
+
+/* ---------- history ---------- */
+function allRecords() {
+  const out = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!/^kxw:\d{4}-\d{2}-\d{2}$/.test(k)) continue;
+      const v = store.get(k);
+      if (v && (v.done || v.t > 0 || (v.e || []).some(Boolean))) out.push({ date: k.slice(4), ...v });
+    }
+  } catch {}
+  if (date) {
+    const cur = out.find(r => r.date === fmt(date));
+    const live = { date: fmt(date), e: entries, t: currentElapsed(), done, ur: usedReveal };
+    if (cur) Object.assign(cur, live); else if (live.done || live.t > 0 || entries.some(Boolean)) out.push(live);
+  }
+  return out.sort((a, b) => a.date < b.date ? 1 : -1);
+}
+const statusOf = r => r.done ? (r.ur ? 'help' : 'done') : 'prog';
+const STATUS_TXT = { done: '完成', help: '完成（有提示）', prog: '進行中' };
+function parseD(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function renderHistory() {
+  const recs = allRecords();
+  const map = Object.fromEntries(recs.map(r => [r.date, r]));
+  const clean = recs.filter(r => r.done && !r.ur);
+  const solved = recs.filter(r => r.done);
+  const avg = clean.length ? Math.round(clean.reduce((a, r) => a + r.t, 0) / clean.length / 1000) : null;
+  const best = clean.length ? Math.min(...clean.map(r => Math.floor(r.t / 1000))) : null;
+  let streak = 0;
+  const t = today();
+  let d = new Date(t);
+  if (!(map[fmt(d)] && map[fmt(d)].done)) d.setDate(d.getDate() - 1);
+  while (d >= START && map[fmt(d)] && map[fmt(d)].done) { streak++; d.setDate(d.getDate() - 1); }
+  $('stats').innerHTML = [
+    [solved.length, '完成題數'],
+    [streak + ' 天', '連續完成'],
+    [avg === null ? '—' : fmtTime(avg), '平均用時（無提示）'],
+    [best === null ? '—' : fmtTime(best), '最快紀錄'],
+  ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+
+  // calendar: from the month of START to the current month
+  let html = '';
+  const first = new Date(START.getFullYear(), START.getMonth(), 1);
+  const months = [];
+  for (let m = new Date(t.getFullYear(), t.getMonth(), 1); m >= first; m = new Date(m.getFullYear(), m.getMonth() - 1, 1)) months.push(m);
+  months.forEach(m => {
+    html += `<div class="mon">${m.getFullYear()} 年 ${m.getMonth() + 1} 月</div>` + [...WEEK].map(w => `<div class="h">${w}</div>`).join('');
+    for (let i = 0; i < m.getDay(); i++) html += '<div></div>';
+    const days = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+    for (let dd = 1; dd <= days; dd++) {
+      const x = new Date(m.getFullYear(), m.getMonth(), dd), key = fmt(x), r = map[key];
+      const ok = x >= START && x <= t;
+      const cls = (r ? 's-' + statusOf(r) : '') + (key === fmt(t) ? ' today' : '');
+      const label = `${key}${r ? '・' + STATUS_TXT[statusOf(r)] : ''}`;
+      html += `<button class="${cls}" data-d="${key}" ${ok ? '' : 'disabled'} title="${label}" aria-label="${label}">${dd}</button>`;
+    }
+  });
+  $('cal').innerHTML = html;
+  $('histRows').innerHTML = recs.length ? recs.map(r => {
+    const s = statusOf(r);
+    return `<tr data-d="${r.date}"><td>${r.date}</td><td>第 ${dayIndex(parseD(r.date)) + 1} 期</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
+  }).join('') : '<tr><td colspan="4" class="empty">還沒有紀錄，先去玩今天的題目吧！</td></tr>';
+}
+function openHistory() { if (playing && !done) lock(); renderHistory(); $('hist').hidden = false; $('histClose').focus(); }
+function closeHistory() { $('hist').hidden = true; }
+$('bHist').onclick = openHistory;
+$('histClose').onclick = closeHistory;
+$('hist').addEventListener('click', e => {
+  if (e.target === $('hist')) return closeHistory();
+  const el = e.target.closest('[data-d]');
+  if (el && !el.disabled) { closeHistory(); load(parseD(el.dataset.d)); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('hist').hidden) closeHistory(); });
+
+buildKana();
+applyOpts();
+load(pickDate());
+})();
+</script>
