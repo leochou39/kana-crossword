@@ -142,7 +142,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .ex { margin: 6px 0 0; font-size: 15px; line-height: 1.6; }
 .ex b { color: var(--ai); }
 .ext { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
-.gram { display: inline-block; margin-left: 6px; font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--ai-wash); color: var(--ink); }
+.gram { display: inline-block; margin: 2px 0 0 6px; font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--ai-wash); color: var(--ink); }
 .wclue { margin: 6px 0 0; font-size: 12px; color: var(--ink-soft); border-top: 1px dashed var(--rule); padding-top: 5px; }
 .tbl { overflow-x: auto; }
 .tbl table { border-collapse: collapse; width: 100%; font-size: 14px; }
@@ -252,7 +252,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
       </div>
       <div class="tools">
         <button id="bLetter">提示一格</button>
-        <button id="bWord">顯示這個字</button>
+        <button id="bWord">顯示整個詞</button>
         <span class="sp"></span>
         <button id="bAll" class="danger">全部答案</button>
         <button id="bClear" class="danger">清除</button>
@@ -672,7 +672,7 @@ function renderResult(scroll) {
   const rows = order.map(w => {
     const [kana, written, meaning, pos, clue, lv, ex, exTr, gram] = VOCAB[w.vi];
     return `<li class="wcard">
-      <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="lv lv-${lv}">${lv}</span><span class="wm">${meaning}</span></div>
+      <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="wm">（${meaning}）</span><span class="lv lv-${lv}">${lv}</span></div>
       <p class="ex">${markWord(ex, kana, written)}</p>
       <p class="ext">${exTr}<span class="gram">${gram}</span></p>
       <p class="wclue">提示：${clue}</p>

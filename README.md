@@ -11,6 +11,7 @@
 | `vocab.txt` | 單字表（讀音｜寫法｜中文意思｜級數，依詞性分區；沒寫級數的是 N5） |
 | `clues.txt` | 每個單字的情境提示 |
 | `examples.txt` | 每個單字的例句、中文翻譯與文法點（完成後顯示） |
+| `grammar.txt` | 文法標籤的中文說明 |
 | `generate.py` | 出題程式，讀取上面兩個檔案，產生 `puzzles.js` |
 | `index.html` | 網頁本體 |
 | `assets/` | 連結預覽圖與網站圖示 |

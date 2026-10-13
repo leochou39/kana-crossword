@@ -184,6 +184,17 @@ def main():
     missing = [v["k"] + "|" + v["w"] for v in vocab if (v["k"], v["w"]) not in examples]
     if missing:
         sys.exit("examples.txt 缺少例句：" + "、".join(missing))
+    grammar = {}
+    for line in open("grammar.txt", encoding="utf8"):
+        line = line.strip()
+        if line and not line.startswith("#"):
+            k, disp = line.split("|")
+            grammar[k] = disp
+    missing = sorted({part for ex in examples.values() for part in ex[2].split("／") if part not in grammar})
+    if missing:
+        sys.exit("grammar.txt 缺少文法說明：" + "、".join(missing))
+    for ex in examples.values():
+        ex[2] = "／".join(grammar[part] for part in ex[2].split("／"))
     # [讀音, 寫法, 意思, 詞性, 提示, 級數, 例句, 例句翻譯, 文法]
     out_vocab = [[v["k"], v["w"], v["m"], v["p"], clues[(v["k"], v["w"])], v["lv"]] + examples[(v["k"], v["w"])] for v in vocab]
     with open("puzzles.js", "w", encoding="utf8") as f:
