@@ -618,6 +618,8 @@ function typeKana(str) {
   startTick();
   // 半形片假名（ｶﾞ）、分開的濁音符號（か＋゛）先合成一個字，避免填對卻變紅字
   str = str.replace(/[\u309B\uFF9E]/g, '\u3099').replace(/[\u309C\uFF9F]/g, '\u309A').normalize('NFKC');
+  // 一次送進好幾個字（輸入法整個詞送出）時照順序逐格填；單一個字時會跳過已答對的格子
+  const seq = [...str].filter(c => isKana(norm(c))).length > 1;
   for (const raw of str) {
     if (raw === '\u3099' || raw === '\u309A') { applyMark(raw === '\u3099' ? DAKU : HANDAKU, true); continue; }
     const ch = norm(raw);
@@ -625,8 +627,10 @@ function typeKana(str) {
     writeCell(cur, ch);
     lastTyped = cur;
     if (!isOk(cur)) break;  // 填錯就停在這一格，方便馬上改試別的字
-    advance();
+    const w = curWord(), k = w.cells.indexOf(cur);
+    if (seq && k < w.cells.length - 1) cur = w.cells[k + 1]; else advance();
   }
+  if (seq && isOk(cur) && !isSolved()) advance();
   buf = '';
   afterEdit();
 }
