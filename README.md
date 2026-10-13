@@ -12,11 +12,18 @@
 | `clues.txt` | 每個單字的情境提示 |
 | `examples.txt` | 每個單字的例句、中文翻譯與文法點（完成後顯示） |
 | `grammar.txt` | 文法標籤的中文說明 |
+| `examples_ruby.txt` | 例句的假名標注（由 `make_furigana.py` 產生） |
+| `furigana_fix.txt` | 自動標注讀錯時的修正表 |
+| `pairs.txt` | 自動詞／他動詞對照 |
 | `generate.py` | 出題程式，讀取上面的檔案，產生 `puzzles.js` |
 | `conjugate.py` | 動詞變化題（辭書形、ます形、ない形、て形、た形、可能形、意向形）的變化規則 |
 | `index.html` | 網頁本體 |
 | `assets/` | 連結預覽圖與網站圖示 |
 | `build_site.sh` | 把網頁打包到 `docs/`，GitHub Pages 從這裡發佈 |
+
+## 修改例句後
+
+先重新產生假名標注（需要 SudachiPy，見 `make_furigana.py` 開頭說明），讀錯的詞寫進 `furigana_fix.txt`。
 
 ## 修改單字或提示後
 

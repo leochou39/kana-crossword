@@ -167,8 +167,22 @@ def main():
     missing = sorted({part for ex in examples.values() for part in ex[2].split("／") if part not in grammar})
     if missing:
         sys.exit("grammar.txt 缺少文法說明：" + "、".join(missing))
+    # 例句的假名標注（make_furigana.py 產生）與自他動詞對
+    ruby = {}
+    if os.path.exists("examples_ruby.txt"):
+        for line in open("examples_ruby.txt", encoding="utf8"):
+            line = line.rstrip("\n")
+            if line and not line.startswith("#"):
+                k, w, annotated = line.split("|", 2)  # 標注本身含有「|」，只切前兩個
+                ruby[(k, w)] = annotated
+    pairs = {}
+    for k, row in read_table("pairs.txt", 5).items():
+        kind, other, other_kana = row
+        pairs[k] = f"{kind}動詞｜對應{'他' if kind == '自' else '自'}動詞：{other}（{other_kana}）"
     for v in base:
         s_, t_, gr = examples[(v["k"], v["w"])]
+        s_ = ruby.get((v["k"], v["w"]), s_)
+        v["pair"] = pairs.get((v["k"], v["w"]), "")
         v["clue"] = clues[(v["k"], v["w"])]
         v["ex"] = [s_, t_, "／".join(grammar[part] for part in gr.split("／"))]
     # 動詞變化題：放在一般單字後面，例句沿用原動詞的例句，文法欄改成該形的說明
@@ -177,6 +191,7 @@ def main():
         c["g"] = to_grid(c["k"])
         s_, t_, _ = examples[c["base"]]
         c["ex"] = [s_, t_, c["form_gram"]]
+        c["pair"] = pairs.get(c["base"], "")
     vocab = base + conj
     key = lambda v: (v["k"], v["w"], v["clue"])
     index_of = {key(v): i for i, v in enumerate(vocab)}
@@ -226,11 +241,12 @@ def main():
         cj = sum(1 for vi, *_ in placed if vocab[vi]["p"] == "動詞變化")
         print(f"day {day:3d}: words={len(placed):2d} filled={filled} n4={n4} two={two} conj={cj} score={score:.0f}", file=sys.stderr)
 
-    # [讀音, 寫法, 意思, 詞性, 提示, 級數, 例句, 例句翻譯, 文法]
+    # [讀音, 寫法, 意思, 詞性, 提示, 級數, 例句（{漢字|かな}標注）, 例句翻譯, 文法, 自他動詞對]
     # 動詞變化題的例句欄存原動詞的編號（數字），網頁再去原動詞那裡拿例句，檔案小很多
     base_index = {(v["k"], v["w"]): i for i, v in enumerate(base)}
     out_vocab = [[v["k"], v["w"], v["m"], v["p"], v["clue"], v["lv"]]
-                 + ([base_index[v["base"]], "", v["ex"][2]] if v["p"] == "動詞變化" else v["ex"]) for v in vocab]
+                 + ([base_index[v["base"]], "", v["ex"][2]] if v["p"] == "動詞變化" else v["ex"]) + [v["pair"]]
+                 for v in vocab]
     with open("puzzles.js", "w", encoding="utf8") as f:
         f.write("const START_DATE='2026-10-13';\n")
         f.write("const VOCAB=" + json.dumps(out_vocab, ensure_ascii=False, separators=(",", ":")) + ";\n")

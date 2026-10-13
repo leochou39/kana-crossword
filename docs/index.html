@@ -146,13 +146,13 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 
 /* result + panels */
 .result { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; margin-bottom: 22px; }
-.result h2 { font-family: var(--font-kana); font-weight: 600; margin: 0 0 4px; font-size: 22px; }
-.result .sub { color: var(--ink-soft); margin: 0 0 12px; font-size: 14px; }
-.result .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.result h2 { font-family: var(--font-kana); font-weight: 600; margin: 0 0 4px; font-size: 22px; text-align: center; }
+.result .sub { color: var(--ink-soft); margin: 0 0 12px; font-size: 14px; text-align: center; }
+.result .acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 12px; }
 .result .acts { align-items: center; }
 .result .acts button { height: 36px; display: inline-flex; align-items: center; border: 1px solid var(--ai); background: var(--ai); color: var(--sheet); border-radius: var(--radius); padding: 0 14px; font-size: 13px; }
 .result .acts button.ghost { background: transparent; color: var(--ai); }
-.wsum { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
+.wsum { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; text-align: center; }
 .wlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
 .wcard { border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; background: var(--paper); min-width: 0; }
 .wh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
@@ -163,7 +163,12 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .lv { font-size: 11px; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ai); color: var(--ai); }
 .lv-N4 { background: var(--ai); color: var(--sheet); }
 .ex { margin: 6px 0 0; font-size: 15px; line-height: 1.6; }
+.ex { line-height: 2.1; }
+.ex ruby { ruby-align: center; }
+.ex rt { font-size: .55em; color: var(--ink-soft); font-weight: 400; }
 .ex b { color: var(--ai); }
+.ex b rt { color: var(--ai); }
+.pair { margin: 4px 0 0; font-size: 12px; color: var(--ai); }
 .ext { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
 .gram { display: inline-block; margin: 2px 0 0 6px; font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--ai-wash); color: var(--ink); }
 .wclue { margin: 6px 0 0; font-size: 12px; color: var(--ink-soft); border-top: 1px dashed var(--rule); padding-top: 5px; }
@@ -317,13 +322,13 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
     <div class="stats" id="stats"></div>
     <div class="cal" id="cal"></div>
     <div class="legend"><span><i class="s-done"></i>完成</span><span><i class="s-prog"></i>進行中</span><span><i></i>未玩</span></div>
-    <div class="tbl"><table><thead><tr><th>日期</th><th>課</th><th>狀態</th><th>用時</th></tr></thead><tbody id="histRows"></tbody></table></div>
+    <div class="tbl"><table><thead><tr><th>日期</th><th>狀態</th><th>用時</th></tr></thead><tbody id="histRows"></tbody></table></div>
     <p class="note">紀錄只存在這台裝置的這個瀏覽器裡。換手機、換瀏覽器或清除網站資料後就看不到了。</p>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="puzzles.js?v=c22394da"></script>
+<script src="puzzles.js?v=3331f2a0"></script>
 <script>
 (() => {
 const N = 10, DAY = 86400000;
@@ -699,11 +704,12 @@ function renderResult(scroll) {
   const ts = fmtTime(Math.floor(elapsed / 1000));
   const n4 = order.filter(w => VOCAB[w.vi][5] === 'N4').length;
   const rows = order.map(w => {
-    let [kana, written, meaning, pos, clue, lv, ex, exTr, gram] = VOCAB[w.vi];
+    let [kana, written, meaning, pos, clue, lv, ex, exTr, gram, pair] = VOCAB[w.vi];
     if (typeof ex === 'number') [ex, exTr] = VOCAB[ex].slice(6, 8);  // 動詞變化題沿用原動詞的例句
     return `<li class="wcard">
       <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="wm">（${meaning.replace(/（/g, '〔').replace(/）/g, '〕')}）</span><span class="lv lv-${lv}">${lv}</span></div>
-      <p class="ex">${markWord(ex, kana, written)}</p>
+      ${pair ? `<p class="pair">${pair}</p>` : ''}
+      <p class="ex">${rubyHTML(ex, kana, written)}</p>
       <p class="ext">${exTr}<span class="gram">${gram}</span></p>
       <p class="wclue">提示：${clue}</p>
     </li>`;
@@ -722,15 +728,21 @@ function renderResult(scroll) {
   $('bHide').onclick = () => { const tb = $('wordTbl'); tb.hidden = !tb.hidden; $('bHide').textContent = tb.hidden ? '展開單字表' : '收起單字表'; };
   if (scroll) box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
-// 例句中把單字標粗：先找寫法，再找去掉詞尾假名的語幹，最後找讀音
-function markWord(sentence, kana, written) {
-  const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const cands = [written, written.replace(/[\u3041-\u3096]+$/, ''), kana, kana.slice(0, -1)]
-    .filter(t => t && t.length >= 1 && !(t.length === 1 && /[\u3041-\u3096]/.test(t)));
-  for (const t of cands) {
-    if (sentence.includes(t)) return sentence.replace(new RegExp(esc(t)), m => `<b>${m}</b>`);
-  }
-  return sentence;
+// 例句：{漢字|かな} 轉成 <ruby>，並把題目的單字標粗（找寫法、語幹或讀音，整段標注一起加粗）
+function rubyHTML(annotated, kana, written) {
+  const toks = [];
+  annotated.replace(/\{([^|}]+)\|([^}]+)\}|([^{]+)/g, (_, k, r, t) => { toks.push(k ? { t: k, r } : { t }); return ''; });
+  const plain = toks.map(x => x.t).join('');
+  const cands = [written, written.replace(/[ぁ-ゖ]+$/, ''), kana, kana.slice(0, -1)]
+    .filter(t => t && !(t.length === 1 && /[ぁ-ゖ]/.test(t)));
+  let a = -1, b = -1;
+  for (const t of cands) { const i = plain.indexOf(t); if (i >= 0) { a = i; b = i + t.length; break; } }
+  let pos = 0;
+  return toks.map(x => {
+    const s0 = pos, s1 = pos + x.t.length; pos = s1;
+    const html = x.r ? `<ruby>${x.t}<rt>${x.r}</rt></ruby>` : x.t;
+    return a >= 0 && s0 < b && s1 > a ? `<b>${html}</b>` : html;
+  }).join('');
 }
 let pending = null;
 function ask(text, fn) { pending = fn; $('confirmTxt').textContent = text; $('confirm').hidden = false; }
@@ -902,8 +914,8 @@ function renderHistory() {
   $('cal').innerHTML = html;
   $('histRows').innerHTML = recs.length ? recs.map(r => {
     const s = statusOf(r);
-    return `<tr data-d="${r.date}"><td>${r.date}</td><td>${lessonName(parseD(r.date))}</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
-  }).join('') : '<tr><td colspan="4" class="empty">還沒有紀錄，先去玩今天的題目吧！</td></tr>';
+    return `<tr data-d="${r.date}"><td>${r.date}（${lessonName(parseD(r.date))}）</td><td><span class="pill s-${s}">${STATUS_TXT[s]}</span></td><td class="t">${fmtTime(Math.floor(r.t / 1000))}</td></tr>`;
+  }).join('') : '<tr><td colspan="3" class="empty">還沒有紀錄，先去玩今天的題目吧！</td></tr>';
 }
 function openHistory() { if (playing && !done) lock(); renderHistory(); $('hist').hidden = false; $('histClose').focus(); }
 function closeHistory() { $('hist').hidden = true; }
