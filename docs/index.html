@@ -37,6 +37,7 @@
   --wrong: #C23B3B;
   --wrong-wash: #F8DCDC;
   --cur-ink: #1B2620;     /* 目前格子（黃底）上的字 */
+  --num: #4E6055;         /* 格子角落的題號 */
   --wrong-cur: #B3261E;   /* 目前格子上的錯字 */
   --good: #2E7D5B;
   --font-kana: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Hiragino Sans", system-ui, sans-serif;
@@ -46,13 +47,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #0F1612; --sheet: #25332A; --ink: #E8F0EA; --ink-soft: #A3B5A9; --rule: #3A4D40;
-    --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D;
+    --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D; --num: #D3E0D7;
     --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0F1612; --sheet: #25332A; --ink: #E8F0EA; --ink-soft: #A3B5A9; --rule: #3A4D40;
-  --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D;
+  --block: #030504; --ai: #7CC896; --ai-wash: #2F5A3F; --yamabuki: #E3B841; --cur-ink: #14110A; --wrong-cur: #A0161D; --num: #D3E0D7;
   --wrong: #F08080; --wrong-wash: #4A2326; --good: #6CC79E; color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -96,7 +97,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
 .grid { display: grid; grid-template-columns: repeat(10, 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 .cell { position: relative; aspect-ratio: 1; background: var(--sheet); display: flex; align-items: center; justify-content: center; font-family: var(--font-kana); font-weight: 600; font-size: 5.6cqw; line-height: 1; cursor: pointer; }
 .cell.blk { background: var(--block); cursor: default; }
-.cell .n { position: absolute; top: 2px; left: 3px; font-family: var(--font-body); font-weight: 500; font-size: 1.85cqw; line-height: 1; color: var(--ink-soft); }
+.cell .n { position: absolute; top: 2px; left: 3px; font-family: var(--font-body); font-weight: 500; font-size: 1.85cqw; line-height: 1; color: var(--num); }
 .cell.inword { background: var(--ai-wash); }
 .cell.cur { background: var(--yamabuki); }
 .cell.cur .ch, .cell.cur .n, .cell.cur .buf { color: var(--cur-ink); }
