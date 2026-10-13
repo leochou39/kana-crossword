@@ -5,23 +5,23 @@ ALLERGAN|Company AbbVie bought in 2020 for about $63 billion|愛力根：2020 �
 CEREVEL|Neuroscience biotech AbbVie acquired in 2024|Cerevel：2024 年收購的神經科學生技公司|company
 CHICAGO|AbbVie's headquarters sit in North ___, Illinois|芝加哥：AbbVie 總部位於伊利諾州北芝加哥|company
 PIPELINE|Drugs still in development, collectively|研發管線：仍在開發中的藥物組合|company
-HUMIRA|Injectable antibody for arthritis, psoriasis and Crohn's; once the world's best-selling drug|治療類風濕性關節炎、乾癬、克隆氏症等自體免疫疾病｜機轉：抗 TNF-α 單株抗體，阻斷發炎訊號｜2025 年營收約 45.4 億美元（受生物相似藥競爭，年減約 26%）|product
-SKYRIZI|IL-23 blocking antibody for psoriasis and IBD; AbbVie's top seller today ($17.6B in 2025)|治療乾癬、乾癬性關節炎、克隆氏症、潰瘍性結腸炎｜機轉：抗 IL-23 單株抗體｜2025 年營收約 175.6 億美元，公司營收最高的產品|product
-RINVOQ|Once-daily JAK1 inhibitor pill for arthritis, eczema and IBD|治療類風濕性關節炎、異位性皮膚炎、潰瘍性結腸炎、克隆氏症等｜機轉：口服選擇性 JAK1 抑制劑｜2025 年營收約 83.0 億美元|product
-IMBRUVICA|BTK inhibitor pill for chronic lymphocytic leukemia|治療慢性淋巴性白血病（CLL）等 B 細胞血癌｜機轉：BTK 抑制劑，阻斷 B 細胞的存活訊號｜2025 年營收約 28.7 億美元|product
-VENCLEXTA|BCL-2 inhibitor that makes leukemia cells self-destruct|治療慢性淋巴性白血病（CLL）、急性骨髓性白血病（AML）｜機轉：BCL-2 抑制劑，讓癌細胞重新走向凋亡｜2025 年營收約 27.9 億美元|product
-BOTOX|Nerve-signal blocker for chronic migraine, overactive bladder and wrinkles|治療慢性偏頭痛、膀胱過動、肌肉痙攣，也用於醫美除皺｜機轉：A 型肉毒桿菌素，阻斷神經釋放乙醯膽鹼｜2025 年營收約 63.7 億美元（治療用 37.7 億＋醫美用 26.0 億）|product
-VRAYLAR|Cariprazine for schizophrenia and bipolar disorder|治療思覺失調症、雙極性疾患，也用於重度憂鬱症輔助治療｜機轉：多巴胺 D3／D2 受體部分致效劑｜2025 年營收約 36.2 億美元|product
-UBRELVY|Ubrogepant: stops a migraine attack once it starts|偏頭痛發作時的急性治療｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 12.7 億美元|product
-AQUIPTA|Daily CGRP-blocking pill that prevents migraine|AQUIPTA（台灣品名；美國品名 Qulipta）：每日服用預防偏頭痛|product
-MAVYRET|Eight-week cure for all hepatitis C genotypes|治療各基因型的 C 型肝炎，多數病人 8 週可治癒｜機轉：NS3/4A 蛋白酶抑制劑＋NS5A 抑制劑複方｜2025 年營收約 13.2 億美元|product
-LINZESS|Linaclotide for IBS with constipation|治療便秘型大腸激躁症、慢性特發性便秘｜機轉：鳥苷酸環化酶 C 致效劑，增加腸道分泌與蠕動｜2025 年營收約 9.1 億美元|product
-ELAHERE|First ADC approved for FR-alpha positive ovarian cancer|治療葉酸受體 α 陽性、對鉑類藥物有抗藥性的卵巢癌｜機轉：抗體藥物複合體（ADC），抗體把細胞毒性藥物送進癌細胞｜2025 年營收約 6.9 億美元|product
-EPKINLY|Bispecific antibody that brings T cells to lymphoma cells, partnered with Genmab|治療復發或難治的瀰漫性大 B 細胞淋巴瘤、濾泡性淋巴瘤｜機轉：CD3×CD20 雙特異性抗體，把 T 細胞帶到癌細胞旁攻擊｜2025 年營收約 2.7 億美元（AbbVie 認列部分）|product
-JUVEDERM|Hyaluronic acid filler in the aesthetics portfolio|醫美用途：補充臉部容積、撫平皺紋｜機轉：交聯玻尿酸填充｜2025 年營收約 9.9 億美元|product
-SYNTHROID|Levothyroxine brand for an underactive thyroid|治療甲狀腺功能低下｜機轉：補充合成的甲狀腺素 T4｜營收未在財報中單獨列出|product
-CREON|Pancrelipase capsules that help digest food|治療胰臟外分泌功能不足（如囊性纖維化、慢性胰臟炎）｜機轉：補充胰脂肪酶、蛋白酶與澱粉酶，幫助消化｜2025 年營收約 15.1 億美元|product
-VYALEV|24-hour under-the-skin infusion for advanced Parkinson's|治療晚期帕金森氏症的動作波動｜機轉：左多巴類藥物的前驅藥，24 小時皮下持續輸注｜2025 年營收約 4.8 億美元|product
+HUMIRA|Injectable antibody for arthritis, psoriasis and Crohn's; once the world's best-selling drug (brand name)|治療類風濕性關節炎、乾癬、克隆氏症等自體免疫疾病｜機轉：抗 TNF-α 單株抗體，阻斷發炎訊號｜2025 年營收約 45.4 億美元（受生物相似藥競爭，年減約 26%）|product
+SKYRIZI|IL-23 blocking antibody for psoriasis and IBD; AbbVie's top seller today ($17.6B in 2025) (brand name)|治療乾癬、乾癬性關節炎、克隆氏症、潰瘍性結腸炎｜機轉：抗 IL-23 單株抗體｜2025 年營收約 175.6 億美元，公司營收最高的產品|product
+RINVOQ|Once-daily JAK1 inhibitor pill for arthritis, eczema and IBD (brand name)|治療類風濕性關節炎、異位性皮膚炎、潰瘍性結腸炎、克隆氏症等｜機轉：口服選擇性 JAK1 抑制劑｜2025 年營收約 83.0 億美元|product
+IMBRUVICA|BTK inhibitor pill for chronic lymphocytic leukemia (brand name)|治療慢性淋巴性白血病（CLL）等 B 細胞血癌｜機轉：BTK 抑制劑，阻斷 B 細胞的存活訊號｜2025 年營收約 28.7 億美元|product
+VENCLEXTA|BCL-2 inhibitor that makes leukemia cells self-destruct (brand name)|治療慢性淋巴性白血病（CLL）、急性骨髓性白血病（AML）｜機轉：BCL-2 抑制劑，讓癌細胞重新走向凋亡｜2025 年營收約 27.9 億美元|product
+BOTOX|Nerve-signal blocker for chronic migraine, overactive bladder and wrinkles (brand name)|治療慢性偏頭痛、膀胱過動、肌肉痙攣，也用於醫美除皺｜機轉：A 型肉毒桿菌素，阻斷神經釋放乙醯膽鹼｜2025 年營收約 63.7 億美元（治療用 37.7 億＋醫美用 26.0 億）|product
+VRAYLAR|Cariprazine for schizophrenia and bipolar disorder (brand name)|治療思覺失調症、雙極性疾患，也用於重度憂鬱症輔助治療｜機轉：多巴胺 D3／D2 受體部分致效劑｜2025 年營收約 36.2 億美元|product
+UBRELVY|Ubrogepant: stops a migraine attack once it starts (brand name)|偏頭痛發作時的急性治療｜機轉：口服 CGRP 受體拮抗劑｜2025 年營收約 12.7 億美元|product
+AQUIPTA|Daily CGRP-blocking pill that prevents migraine (brand name)|AQUIPTA（台灣品名；美國品名 Qulipta）：每日服用預防偏頭痛|product
+MAVYRET|Eight-week cure for all hepatitis C genotypes (brand name)|治療各基因型的 C 型肝炎，多數病人 8 週可治癒｜機轉：NS3/4A 蛋白酶抑制劑＋NS5A 抑制劑複方｜2025 年營收約 13.2 億美元|product
+LINZESS|Linaclotide for IBS with constipation (brand name)|治療便秘型大腸激躁症、慢性特發性便秘｜機轉：鳥苷酸環化酶 C 致效劑，增加腸道分泌與蠕動｜2025 年營收約 9.1 億美元|product
+ELAHERE|First ADC approved for FR-alpha positive ovarian cancer (brand name)|治療葉酸受體 α 陽性、對鉑類藥物有抗藥性的卵巢癌｜機轉：抗體藥物複合體（ADC），抗體把細胞毒性藥物送進癌細胞｜2025 年營收約 6.9 億美元|product
+EPKINLY|Bispecific antibody that brings T cells to lymphoma cells, partnered with Genmab (brand name)|治療復發或難治的瀰漫性大 B 細胞淋巴瘤、濾泡性淋巴瘤｜機轉：CD3×CD20 雙特異性抗體，把 T 細胞帶到癌細胞旁攻擊｜2025 年營收約 2.7 億美元（AbbVie 認列部分）|product
+JUVEDERM|Hyaluronic acid filler in the aesthetics portfolio (brand name)|醫美用途：補充臉部容積、撫平皺紋｜機轉：交聯玻尿酸填充｜2025 年營收約 9.9 億美元|product
+SYNTHROID|Levothyroxine brand for an underactive thyroid (brand name)|治療甲狀腺功能低下｜機轉：補充合成的甲狀腺素 T4｜營收未在財報中單獨列出|product
+CREON|Pancrelipase capsules that help digest food (brand name)|治療胰臟外分泌功能不足（如囊性纖維化、慢性胰臟炎）｜機轉：補充胰脂肪酶、蛋白酶與澱粉酶，幫助消化｜2025 年營收約 15.1 億美元|product
+VYALEV|24-hour under-the-skin infusion for advanced Parkinson's (brand name)|治療晚期帕金森氏症的動作波動｜機轉：左多巴類藥物的前驅藥，24 小時皮下持續輸注｜2025 年營收約 4.8 億美元|product
 IMMUNOLOGY|Therapeutic area of Humira, Skyrizi and Rinvoq|免疫學：Humira、Skyrizi、Rinvoq 所屬的治療領域|company
 ONCOLOGY|Therapeutic area of Imbruvica and Venclexta|腫瘤學：Imbruvica、Venclexta 所屬的治療領域|company
 AESTHETICS|Botox Cosmetic and Juvederm belong to this business|醫學美容：Botox Cosmetic、Juvederm 所屬事業|company
