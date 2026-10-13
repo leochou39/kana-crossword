@@ -306,6 +306,7 @@ header { display: flex; flex-direction: column; align-items: center; text-align:
             <li>拗音、促音一律寫成大字：<code>きょう</code> → <code>きよう</code>、<code>がっこう</code> → <code>がつこう</code>。</li>
             <li>長音「ー」佔一格（羅馬字按 <code>-</code>）。標有 <code>外來語</code> 的題目答案原本是片假名，填平假名即可。</li>
             <li>填錯的假名會立刻變成紅字。</li>
+            <li>標有 <code>動・變化</code> 的題目要填動詞的變化形，例如「食べる」的ない形就填 <code>たべない</code>。</li>
             <li>完成後會列出本期所有單字的漢字寫法、例句和文法點，標有 <code>N4</code> 的是 N4 單字。</li>
             <li>假名鍵盤上的 <code>゛</code><code>゜</code> 會把剛輸入的字變成濁音／半濁音。</li>
             <li>題目每天午夜（你所在的時區）更新，可以用 ‹ › 回顧過去的題目，進度會自動儲存在這台裝置。</li>
@@ -455,7 +456,7 @@ function buildGrid() {
     g.appendChild(el);
   }
 }
-const POS = { '名詞':'名', '動詞':'動', 'い形容詞':'い形', 'な形容詞':'な形', '副詞・其他':'副・他', '外來語':'外來語' };
+const POS = { '名詞':'名', '動詞':'動', '動詞變化':'動・變化', 'い形容詞':'い形', 'な形容詞':'な形', '副詞・其他':'副・他', '外來語':'外來語' };
 function clueHTML(w, withHint) {
   const [kana, written, meaning, pos, clue] = VOCAB[w.vi];
   const tag = pos === '外來語' ? '<span class="pos tag-loan">外來語</span>' : `<span class="pos">${POS[pos] || pos}</span>`;
@@ -690,9 +691,10 @@ function renderResult(scroll) {
   const ts = fmtTime(Math.floor(elapsed / 1000));
   const n4 = order.filter(w => VOCAB[w.vi][5] === 'N4').length;
   const rows = order.map(w => {
-    const [kana, written, meaning, pos, clue, lv, ex, exTr, gram] = VOCAB[w.vi];
+    let [kana, written, meaning, pos, clue, lv, ex, exTr, gram] = VOCAB[w.vi];
+    if (typeof ex === 'number') [ex, exTr] = VOCAB[ex].slice(6, 8);  // 動詞變化題沿用原動詞的例句
     return `<li class="wcard">
-      <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="wm">（${meaning}）</span><span class="lv lv-${lv}">${lv}</span></div>
+      <div class="wh"><span class="wno">${w.num}${w.d ? 'タテ' : 'ヨコ'}</span><span class="k">${kana}</span>${written !== kana ? `<span class="wr">${written}</span>` : ''}<span class="wm">（${meaning.replace(/（/g, '〔').replace(/）/g, '〕')}）</span><span class="lv lv-${lv}">${lv}</span></div>
       <p class="ex">${markWord(ex, kana, written)}</p>
       <p class="ext">${exTr}<span class="gram">${gram}</span></p>
       <p class="wclue">提示：${clue}</p>

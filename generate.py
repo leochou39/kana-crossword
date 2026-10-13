@@ -1,6 +1,8 @@
 """Generate 365 daily 10x10 kana crosswords from vocab.txt -> puzzles.js"""
 import datetime, json, os, re, random, sys
 
+from conjugate import conjugations
+
 N = 10
 DAYS = 365
 ATTEMPTS = 24
@@ -8,6 +10,9 @@ POOL = 420
 START = datetime.date(2026, 10, 13)
 MAX_TWO = 3          # 每題最多幾個兩字短單字
 COOLDOWN = {"N4": 8, "N5": 20}  # 同一個字隔幾天才能再出現（N4 較常出現）
+MAX_CONJ = 3         # 每題最多幾個動詞變化題
+CONJ_POOL = 60
+CONJ_COOLDOWN = 45
 SMALL = str.maketrans("ぁぃぅぇぉっゃゅょゎ", "あいうえおつやゆよわ")
 
 
@@ -41,7 +46,7 @@ def load_vocab(path):
 def build(rng, pool, vocab):
     grid = [[None] * N for _ in range(N)]
     used = [[[False, False] for _ in range(N)] for _ in range(N)]
-    placed, used_strings, twos = [], set(), [0]
+    placed, used_strings, twos, conjs = [], set(), [0], [0]
 
     def fits(g, r, c, d):
         dr, dc = (0, 1) if d == 0 else (1, 0)
@@ -81,13 +86,15 @@ def build(rng, pool, vocab):
         used_strings.add(g)
         if len(g) == 2:
             twos[0] += 1
+        if vocab[vi]["p"] == "動詞變化":
+            conjs[0] += 1
 
     index = {}
     for vi in pool:
         for p, ch in enumerate(vocab[vi]["g"]):
             index.setdefault(ch, []).append((vi, p))
 
-    starters = [vi for vi in pool if 5 <= len(vocab[vi]["g"]) <= 8]
+    starters = [vi for vi in pool if 5 <= len(vocab[vi]["g"]) <= 8 and vocab[vi]["p"] != "動詞變化"]
     vi = rng.choice(starters)
     L = len(vocab[vi]["g"])
     d = rng.randint(0, 1)
@@ -108,10 +115,13 @@ def build(rng, pool, vocab):
                         g = vocab[vi]["g"]
                         if g in used_strings or (len(g) == 2 and twos[0] >= MAX_TWO):
                             continue
+                        if vocab[vi]["p"] == "動詞變化" and conjs[0] >= MAX_CONJ:
+                            continue
                         sr, sc = (r, c - p) if d == 0 else (r - p, c)
                         x = fits(g, sr, sc, d)
                         if x > 0:
-                            bonus = (1.5 if vocab[vi]["lv"] == "N4" else 0) - (2.5 if len(g) == 2 else 0)
+                            bonus = (1.5 if vocab[vi]["lv"] == "N4" else 0) - (2.5 if len(g) == 2 else 0) \
+                                + (0.8 if vocab[vi]["p"] == "動詞變化" else 0)
                             cands.append((x * 3 + len(g) * 0.8 + bonus + rng.random() * 2, vi, sr, sc, d))
         if not cands:
             break
@@ -128,16 +138,63 @@ def build(rng, pool, vocab):
     return score, grid, placed
 
 
+def read_table(path, n):
+    rows = {}
+    for line in open(path, encoding="utf8"):
+        line = line.strip()
+        if line and not line.startswith("#"):
+            parts = line.split("|")
+            if len(parts) != n:
+                sys.exit(f"{path} 格式錯誤：{line}")
+            rows[tuple(parts[:2])] = parts[2:]
+    return rows
+
+
 def main():
-    vocab = load_vocab("vocab.txt")
-    usable = [i for i, v in enumerate(vocab) if 2 <= len(v["g"]) <= N]
+    base = load_vocab("vocab.txt")
+    clues = {k: v[0] for k, v in read_table("clues.txt", 3).items()}
+    examples = read_table("examples.txt", 5)
+    grammar = {}
+    for line in open("grammar.txt", encoding="utf8"):
+        line = line.strip()
+        if line and not line.startswith("#"):
+            k, disp = line.split("|")
+            grammar[k] = disp
+    for name, table in (("clues.txt 缺少提示", clues), ("examples.txt 缺少例句", examples)):
+        missing = [v["k"] + "|" + v["w"] for v in base if (v["k"], v["w"]) not in table]
+        if missing:
+            sys.exit(name + "：" + "、".join(missing))
+    missing = sorted({part for ex in examples.values() for part in ex[2].split("／") if part not in grammar})
+    if missing:
+        sys.exit("grammar.txt 缺少文法說明：" + "、".join(missing))
+    for v in base:
+        s_, t_, gr = examples[(v["k"], v["w"])]
+        v["clue"] = clues[(v["k"], v["w"])]
+        v["ex"] = [s_, t_, "／".join(grammar[part] for part in gr.split("／"))]
+    # 動詞變化題：放在一般單字後面，例句沿用原動詞的例句，文法欄改成該形的說明
+    conj = conjugations(base)
+    for c in conj:
+        c["g"] = to_grid(c["k"])
+        s_, t_, _ = examples[c["base"]]
+        c["ex"] = [s_, t_, c["form_gram"]]
+    vocab = base + conj
+    key = lambda v: (v["k"], v["w"], v["clue"])
+    index_of = {key(v): i for i, v in enumerate(vocab)}
+
+    usable = [i for i, v in enumerate(base) if 2 <= len(v["g"]) <= N]
+    conj_usable = [i for i, v in enumerate(vocab) if v["p"] == "動詞變化" and 2 <= len(v["g"]) <= N]
     last_used = {}
     puzzles = []
-    # 已經上線（今天以前）的題目保持不變，避免玩家的進度對不上
+    # 已經上線（今天以前）的題目保持不變；用單字內容重新對應編號，新增單字也不會錯位
     frozen = []
     if os.path.exists("puzzles.js"):
         old = open("puzzles.js", encoding="utf8").read()
         frozen = json.loads(re.search(r"const PUZZLES=(.*?);\n", old).group(1))
+        old_vocab = json.loads(re.search(r"const VOCAB=(.*?);\n", old).group(1))
+        for pz in frozen:
+            for w in pz["w"]:
+                ov = old_vocab[w[0]]
+                w[0] = index_of[(ov[0], ov[1], ov[4])]
     keep = min(len(frozen), max(0, (datetime.date.today() - START).days + 1))
     for day in range(DAYS):
         if day < keep:
@@ -149,6 +206,8 @@ def main():
         rng = random.Random(20261013 + day * 7919)
         order = sorted(usable, key=lambda i: (last_used.get(i, -999), rng.random()))
         pool = [i for i in order if day - last_used.get(i, -999) > COOLDOWN[vocab[i]["lv"]]][:POOL]
+        fresh_conj = [i for i in conj_usable if day - last_used.get(i, -999) > CONJ_COOLDOWN]
+        pool += rng.sample(fresh_conj, min(CONJ_POOL, len(fresh_conj)))
         best = None
         for _ in range(ATTEMPTS):
             res = build(rng, pool, vocab)
@@ -164,39 +223,14 @@ def main():
         filled = sum(ch != "#" for ch in puzzles[-1]["g"])
         n4 = sum(1 for vi, *_ in placed if vocab[vi]["lv"] == "N4")
         two = sum(1 for vi, *_ in placed if len(vocab[vi]["g"]) == 2)
-        print(f"day {day:3d}: words={len(placed):2d} filled={filled} n4={n4} two={two} score={score:.0f}", file=sys.stderr)
+        cj = sum(1 for vi, *_ in placed if vocab[vi]["p"] == "動詞變化")
+        print(f"day {day:3d}: words={len(placed):2d} filled={filled} n4={n4} two={two} conj={cj} score={score:.0f}", file=sys.stderr)
 
-    clues = {}
-    for line in open("clues.txt", encoding="utf8"):
-        line = line.strip()
-        if line and not line.startswith("#"):
-            k, w, c = line.split("|")
-            clues[(k, w)] = c
-    missing = [v["k"] + "|" + v["w"] for v in vocab if (v["k"], v["w"]) not in clues]
-    if missing:
-        sys.exit("clues.txt 缺少提示：" + "、".join(missing))
-    examples = {}
-    for line in open("examples.txt", encoding="utf8"):
-        line = line.strip()
-        if line and not line.startswith("#"):
-            k, w, s, t, gr = line.split("|")
-            examples[(k, w)] = [s, t, gr]
-    missing = [v["k"] + "|" + v["w"] for v in vocab if (v["k"], v["w"]) not in examples]
-    if missing:
-        sys.exit("examples.txt 缺少例句：" + "、".join(missing))
-    grammar = {}
-    for line in open("grammar.txt", encoding="utf8"):
-        line = line.strip()
-        if line and not line.startswith("#"):
-            k, disp = line.split("|")
-            grammar[k] = disp
-    missing = sorted({part for ex in examples.values() for part in ex[2].split("／") if part not in grammar})
-    if missing:
-        sys.exit("grammar.txt 缺少文法說明：" + "、".join(missing))
-    for ex in examples.values():
-        ex[2] = "／".join(grammar[part] for part in ex[2].split("／"))
     # [讀音, 寫法, 意思, 詞性, 提示, 級數, 例句, 例句翻譯, 文法]
-    out_vocab = [[v["k"], v["w"], v["m"], v["p"], clues[(v["k"], v["w"])], v["lv"]] + examples[(v["k"], v["w"])] for v in vocab]
+    # 動詞變化題的例句欄存原動詞的編號（數字），網頁再去原動詞那裡拿例句，檔案小很多
+    base_index = {(v["k"], v["w"]): i for i, v in enumerate(base)}
+    out_vocab = [[v["k"], v["w"], v["m"], v["p"], v["clue"], v["lv"]]
+                 + ([base_index[v["base"]], "", v["ex"][2]] if v["p"] == "動詞變化" else v["ex"]) for v in vocab]
     with open("puzzles.js", "w", encoding="utf8") as f:
         f.write("const START_DATE='2026-10-13';\n")
         f.write("const VOCAB=" + json.dumps(out_vocab, ensure_ascii=False, separators=(",", ":")) + ";\n")
