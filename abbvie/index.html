@@ -1,0 +1,448 @@
+<title>AbbVie Crossword</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one working board — grid, clue bar, keyboard, tools — with clue lists beside it on wide screens. */
+:root {
+  --paper: #F3F3FA;
+  --sheet: #FFFFFF;
+  --ink: #1A1B33;
+  --ink-soft: #5A5C7A;
+  --rule: #D6D7E8;
+  --block: #23245A;
+  --indigo: #3F3DB8;       /* 靛藍 accent */
+  --indigo-wash: #E1E1F7;
+  --active: #F2C94C;
+  --wrong: #C8394B;
+  --good: #2C7A5B;
+  --font: "IBM Plex Sans", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-tc: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #10111F; --sheet: #191A2E; --ink: #E6E6F5; --ink-soft: #9C9EC0; --rule: #2E3050;
+    --block: #06061A; --indigo: #A3A1FF; --indigo-wash: #2A2A5C; --active: #B8901E; --wrong: #FF8A98; --good: #6CC79E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #10111F; --sheet: #191A2E; --ink: #E6E6F5; --ink-soft: #9C9EC0; --rule: #2E3050;
+  --block: #06061A; --indigo: #A3A1FF; --indigo-wash: #2A2A5C; --active: #B8901E; --wrong: #FF8A98; --good: #6CC79E;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 18px 48px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+
+header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); margin-bottom: 18px; }
+header h1 { font-weight: 700; font-size: 28px; line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+header h1 span { color: var(--indigo); }
+header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.bar { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.timer { height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 15px; font-variant-numeric: tabular-nums; min-width: 76px; justify-content: center; }
+.timer:hover { border-color: var(--indigo); }
+.timer svg { width: 12px; height: 12px; fill: currentColor; opacity: .7; }
+.timer.done { color: var(--good); border-color: var(--good); }
+.count { height: 40px; display: flex; align-items: center; padding: 0 12px; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); font-size: 14px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.desk { position: relative; display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 820px) { .desk { grid-template-columns: minmax(0, 1fr); } .board { max-width: 520px; margin: 0 auto; width: 100%; } }
+.desk.locked .board-play, .desk.locked .clues { filter: blur(9px); opacity: .45; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.cover { position: absolute; z-index: 5; left: 0; right: 0; top: 0; display: flex; justify-content: center; padding-top: clamp(40px, 14vw, 120px); pointer-events: none; }
+.cover .card { pointer-events: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 24px 20px; width: min(340px, 100%); text-align: center; box-shadow: 0 12px 40px rgba(20, 20, 60, .18); }
+.cover h2 { font-size: 24px; margin: 0 0 4px; }
+.cover p { margin: 0 0 16px; color: var(--ink-soft); font-size: 14px; }
+.cover .go { height: 44px; border: 0; background: var(--indigo); color: var(--sheet); font-size: 17px; font-weight: 700; padding: 0 36px; border-radius: 999px; letter-spacing: .04em; }
+
+.gridbox { position: relative; container-type: inline-size; }
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); background: var(--block); border: 2px solid var(--block); gap: 1px; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.cell { position: relative; aspect-ratio: 1; background: var(--sheet); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 5.2cqw; line-height: 1; cursor: pointer; }
+.cell.blk { background: var(--block); cursor: default; }
+.cell .n { position: absolute; top: 1px; left: 2px; font-weight: 500; font-size: 1.9cqw; line-height: 1; color: var(--ink-soft); }
+.cell.inword { background: var(--indigo-wash); }
+.cell.cur { background: var(--active); }
+.cell.wrong .ch { color: var(--wrong); }
+.cell.rv .ch { color: var(--indigo); }
+.solved .cell:not(.blk) { animation: pop .5s ease both; }
+@keyframes pop { 50% { background: var(--indigo-wash); } }
+@media (prefers-reduced-motion: reduce) { .solved .cell:not(.blk) { animation: none; } }
+#kbd { position: absolute; width: 8%; height: 8%; opacity: 0; border: 0; padding: 0; font-size: 16px; background: transparent; color: transparent; caret-color: transparent; pointer-events: none; }
+
+.clue-bar { display: flex; gap: 10px; align-items: center; background: var(--indigo); color: var(--sheet); border-radius: 0 0 var(--radius) var(--radius); padding: 9px 12px; min-height: 56px; }
+.clue-bar .tag { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.clue-bar .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35; }
+.clue-bar .arr { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; border: 1px solid currentColor; background: transparent; color: inherit; opacity: .85; flex: none; }
+
+.keys { margin-top: 12px; display: grid; gap: 5px; }
+.keys .row { display: flex; justify-content: center; gap: 4px; }
+.keys button { height: 44px; flex: 1 1 0; max-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--rule); background: var(--sheet); border-radius: 5px; font-weight: 600; font-size: 17px; touch-action: manipulation; }
+.keys button:active { background: var(--indigo-wash); }
+.keys button.wide { max-width: 68px; flex-grow: 1.5; background: var(--indigo-wash); font-size: 15px; }
+
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+.tools button { height: 36px; display: inline-flex; align-items: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 0 12px; font-size: 13px; }
+.tools button:hover { border-color: var(--indigo); }
+.tools .sp { flex: 1; }
+@media (max-width: 420px) { .tools { gap: 5px; } .tools button { padding: 0 9px; font-size: 12.5px; } }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 10px; background: var(--indigo-wash); border-radius: var(--radius); font-size: 13px; }
+.confirm button { height: 32px; display: inline-flex; align-items: center; border: 1px solid var(--rule); background: var(--sheet); border-radius: var(--radius); padding: 0 12px; font-size: 13px; }
+
+.clues { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 1000px) and (min-width: 821px) { .clues { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .clues { grid-template-columns: 1fr; } }
+.clues h2 { font-size: 17px; margin: 0 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); }
+.clues ol { list-style: none; margin: 0; padding: 0; }
+.clues li { display: grid; grid-template-columns: 26px 1fr; gap: 4px; padding: 5px 6px; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1.45; }
+.clues li:hover, .clues li.on { background: var(--indigo-wash); }
+.clues li.on { box-shadow: inset 3px 0 0 var(--indigo); }
+.clues li.ok { color: var(--ink-soft); }
+.clues li.ok .m { text-decoration: line-through; text-decoration-color: var(--rule); }
+.clues li .no { font-weight: 700; text-align: right; padding-right: 4px; font-variant-numeric: tabular-nums; }
+.clues li .len { font-size: 12px; color: var(--ink-soft); margin-left: 4px; }
+
+.result { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 18px 14px; margin-bottom: 22px; text-align: center; }
+.result h2 { margin: 0 0 4px; font-size: 22px; }
+.result .sub { color: var(--ink-soft); margin: 0 0 12px; font-size: 14px; }
+.result .acts { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-bottom: 14px; }
+.result .acts button { height: 36px; display: inline-flex; align-items: center; border: 1px solid var(--indigo); background: var(--indigo); color: var(--sheet); border-radius: var(--radius); padding: 0 14px; font-size: 13px; }
+.result .acts button.ghost { background: transparent; color: var(--indigo); }
+.wlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; text-align: left; }
+.wcard { border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; background: var(--paper); min-width: 0; }
+.wh { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.wno { font-size: 12px; color: var(--ink-soft); }
+.wa { font-weight: 700; font-size: 17px; letter-spacing: .04em; }
+.cat { font-size: 11px; padding: 0 6px; border-radius: 3px; background: var(--indigo); color: var(--sheet); }
+.winfo { margin: 6px 0 0; font-family: var(--font-tc); font-size: 14px; }
+.wclue { margin: 6px 0 0; font-size: 12px; color: var(--ink-soft); border-top: 1px dashed var(--rule); padding-top: 5px; }
+
+.side-foot { margin-top: 26px; display: grid; gap: 18px; }
+.settings label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; }
+.howto { font-size: 13.5px; color: var(--ink-soft); background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 16px; }
+.howto h3 { margin: 0 0 6px; font-size: 14px; color: var(--ink); }
+.howto ul { margin: 0; padding-left: 18px; }
+.note { font-size: 12px; color: var(--ink-soft); text-align: center; margin-top: 28px; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 20px; font-size: 14px; z-index: 10; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><span>AbbVie</span> Crossword</h1>
+    <p>Products, pipeline &amp; clinical-trial terms</p>
+    <div class="bar">
+      <button class="timer" id="timer" title="Pause"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10"/><rect x="7" y="1" width="3" height="10"/></svg><span id="timerTxt">0:00</span></button>
+      <div class="count" id="count"></div>
+    </div>
+  </header>
+
+  <div id="result" class="result" hidden></div>
+
+  <div class="desk locked" id="desk">
+    <div class="cover" id="cover">
+      <div class="card">
+        <h2 id="coverTitle">Ready?</h2>
+        <p id="coverSub"></p>
+        <button class="go" id="bStart">Start</button>
+      </div>
+    </div>
+    <div class="board">
+      <div class="board-play">
+        <div class="gridbox">
+          <div class="grid" id="grid" role="grid" aria-label="Crossword grid"></div>
+          <input id="kbd" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Type a letter">
+        </div>
+        <div class="clue-bar">
+          <button class="arr" id="cbPrev" aria-label="Previous clue">‹</button>
+          <span class="tag" id="cbTag"></span>
+          <span class="txt" id="cbTxt"></span>
+          <button class="arr" id="cbNext" aria-label="Next clue">›</button>
+        </div>
+      </div>
+      <div class="keys" id="keys"></div>
+      <div class="board-play">
+        <div class="tools">
+          <button id="bLetter">Reveal letter</button>
+          <button id="bWord">Reveal word</button>
+          <span class="sp"></span>
+          <button id="bAll">Reveal all</button>
+          <button id="bClear">Clear</button>
+        </div>
+        <div class="confirm" id="confirm" hidden>
+          <span id="confirmTxt"></span>
+          <button id="confirmYes">Yes</button>
+          <button id="confirmNo">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="clues">
+        <section><h2>Across</h2><ol id="across"></ol></section>
+        <section><h2>Down</h2><ol id="down"></ol></section>
+      </div>
+      <div class="side-foot">
+        <div class="settings"><label><input type="checkbox" id="optKeys"> Show on-screen keyboard</label></div>
+        <div class="howto">
+          <h3>How to play</h3>
+          <ul>
+            <li>Tap a square to select it; tap again to switch between across and down.</li>
+            <li>Wrong letters turn red right away. Each revealed letter counts as one hint.</li>
+            <li>When you finish, every answer is explained in Chinese.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note">An unofficial quiz for fun and learning. Not affiliated with or endorsed by AbbVie.</p>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="puzzle.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const N = PUZZLE.n, KEY = 'abbvie-xw';
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {} },
+};
+const CAT = { company: 'Company', product: 'Product', trial: 'Clinical trial', science: 'Science' };
+
+const answer = [...PUZZLE.g];
+const words = PUZZLE.w.map((w, wi) => ({ ...w, wi, cells: [...w.a].map((_, i) => w.d === 0 ? w.r * N + w.c + i : (w.r + i) * N + w.c) }));
+const cellWords = Array.from({ length: N * N }, () => [-1, -1]);
+words.forEach(w => w.cells.forEach(ci => cellWords[ci][w.d] = w.wi));
+const numAt = {};
+let n = 0;
+for (let i = 0; i < N * N; i++) {
+  const starts = words.filter(w => w.cells[0] === i);
+  if (starts.length) { numAt[i] = ++n; starts.forEach(w => w.num = n); }
+}
+const order = [...words].sort((a, b) => a.d - b.d || a.num - b.num);
+
+const saved = store.get() || {};
+let entries = saved.e && saved.e.length === N * N ? saved.e : Array(N * N).fill('');
+let revealed = new Set(saved.rv || []);
+let elapsed = saved.t || 0, done = !!saved.done, ticking = false, tickStart = 0, playing = false;
+let cur = order[0].cells[0], dir = order[0].d;
+let opts = { keys: matchMedia('(pointer: coarse)').matches };
+try { Object.assign(opts, JSON.parse(localStorage.getItem(KEY + ':opts')) || {}); } catch {}
+
+/* ---------- build ---------- */
+const g = $('grid');
+for (let i = 0; i < N * N; i++) {
+  const el = document.createElement('div');
+  el.className = 'cell' + (answer[i] === '#' ? ' blk' : '');
+  el.dataset.i = i;
+  if (answer[i] !== '#') el.innerHTML = (numAt[i] ? `<span class="n">${numAt[i]}</span>` : '') + '<span class="ch"></span>';
+  g.appendChild(el);
+}
+for (const [id, d] of [['across', 0], ['down', 1]]) {
+  words.filter(w => w.d === d).sort((a, b) => a.num - b.num).forEach(w => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="no">${w.num}</span><span><span class="m">${w.clue}</span></span>`;
+    li.onclick = () => { gotoWord(w); focusInput(); };
+    $(id).appendChild(li);
+    w.li = li;
+  });
+}
+const ROWS = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
+ROWS.forEach((r, ri) => {
+  const row = document.createElement('div');
+  row.className = 'row';
+  if (ri === 2) row.insertAdjacentHTML('beforeend', '<button class="wide" data-k="dir" aria-label="Switch direction">⇄</button>');
+  [...r].forEach(ch => row.insertAdjacentHTML('beforeend', `<button data-k="${ch}">${ch}</button>`));
+  if (ri === 2) row.insertAdjacentHTML('beforeend', '<button class="wide" data-k="del" aria-label="Delete">⌫</button>');
+  $('keys').appendChild(row);
+});
+$('keys').addEventListener('pointerdown', e => e.preventDefault());
+$('keys').addEventListener('click', e => {
+  const k = e.target.closest('button')?.dataset.k;
+  if (!k || !playing) return;
+  if (k === 'del') backspace(); else if (k === 'dir') toggleDir(); else typeLetter(k);
+});
+
+/* ---------- render ---------- */
+const curWord = () => words[cellWords[cur][dir]] || words[cellWords[cur][1 - dir]];
+const wordOK = w => w.cells.every(ci => entries[ci] === answer[ci]);
+function render() {
+  const w = curWord(), inW = new Set(w.cells);
+  [...g.children].forEach((el, i) => {
+    if (answer[i] === '#') return;
+    el.classList.toggle('cur', i === cur);
+    el.classList.toggle('inword', inW.has(i) && i !== cur);
+    el.classList.toggle('rv', revealed.has(i));
+    el.classList.toggle('wrong', !!entries[i] && entries[i] !== answer[i]);
+    el.querySelector('.ch').textContent = entries[i];
+  });
+  words.forEach(x => { x.li.classList.toggle('on', x === w); x.li.classList.toggle('ok', wordOK(x)); });
+  $('cbTag').textContent = `${w.num} ${w.d ? 'Down' : 'Across'}`;
+  $('cbTxt').textContent = w.clue;
+  $('count').textContent = `${words.filter(wordOK).length} / ${words.length} words`;
+  const k = $('kbd');
+  k.style.left = (cur % N) / N * 100 + '%';
+  k.style.top = Math.floor(cur / N) / N * 100 + '%';
+  k.inputMode = opts.keys ? 'none' : 'text';
+}
+const fmtTime = t => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+const currentElapsed = () => elapsed + (ticking ? Date.now() - tickStart : 0);
+function renderTimer() {
+  $('timerTxt').textContent = fmtTime(Math.floor(currentElapsed() / 1000));
+  $('timer').classList.toggle('done', done);
+  $('timer').querySelector('svg').style.display = playing && !done ? '' : 'none';
+}
+setInterval(() => { if (ticking) renderTimer(); }, 500);
+function save() { store.set({ e: entries, rv: [...revealed], t: currentElapsed(), done }); }
+
+/* ---------- movement & editing ---------- */
+function setCur(i, d) { cur = i; if (d !== undefined) dir = d; if (cellWords[cur][dir] < 0) dir = 1 - dir; render(); }
+function gotoWord(w) { setCur(w.cells.find(ci => !entries[ci]) ?? w.cells[0], w.d); }
+function stepWord(delta) {
+  let k = order.indexOf(curWord());
+  for (let t = 0; t < order.length; t++) { k = (k + delta + order.length) % order.length; if (!wordOK(order[k])) break; }
+  gotoWord(order[k]);
+}
+function toggleDir() { if (cellWords[cur][1 - dir] >= 0) { dir = 1 - dir; render(); } }
+function advance() {
+  const w = curWord(), k = w.cells.indexOf(cur);
+  if (k < w.cells.length - 1) cur = w.cells[k + 1];
+  else { const empty = w.cells.find(ci => !entries[ci]); if (empty !== undefined) cur = empty; else if (!isSolved()) { stepWord(1); return; } }
+}
+function typeLetter(ch) {
+  if (done || !playing) return;
+  if (!revealed.has(cur)) entries[cur] = ch.toUpperCase();
+  advance(); afterEdit();
+}
+function backspace() {
+  if (done || !playing) return;
+  if (entries[cur] && !revealed.has(cur)) entries[cur] = '';
+  else { const w = curWord(), k = w.cells.indexOf(cur); if (k > 0) { cur = w.cells[k - 1]; if (!revealed.has(cur)) entries[cur] = ''; } }
+  afterEdit();
+}
+function moveArrow(dr, dc) {
+  const d = dr ? 1 : 0;
+  if (d !== dir && cellWords[cur][d] >= 0) { dir = d; render(); return; }
+  let r = Math.floor(cur / N), c = cur % N;
+  while (true) {
+    r += dr; c += dc;
+    if (r < 0 || r >= N || c < 0 || c >= N) return;
+    if (answer[r * N + c] !== '#') { setCur(r * N + c, cellWords[r * N + c][d] >= 0 ? d : 1 - d); return; }
+  }
+}
+const isSolved = () => answer.every((a, i) => a === '#' || entries[i] === a);
+function afterEdit() { render(); if (isSolved()) finish(); else save(); }
+function reveal(cells) {
+  cells.forEach(i => { if (entries[i] !== answer[i]) { entries[i] = answer[i]; revealed.add(i); } });
+  afterEdit();
+}
+
+/* ---------- start / finish ---------- */
+function lock() {
+  if (ticking) { elapsed = currentElapsed(); ticking = false; }
+  playing = false;
+  const show = !done;
+  $('cover').hidden = !show;
+  $('desk').classList.toggle('locked', show);
+  const resumed = elapsed > 0 || entries.some(Boolean);
+  $('coverTitle').textContent = resumed ? 'Paused' : 'Ready?';
+  $('coverSub').textContent = resumed ? `Time so far ${fmtTime(Math.floor(elapsed / 1000))}` : `${words.length} words · the clock starts when you press Start`;
+  $('bStart').textContent = resumed ? 'Resume' : 'Start';
+  save(); renderTimer();
+}
+function unlock() {
+  playing = true; $('cover').hidden = true; $('desk').classList.remove('locked');
+  if (!ticking && !done) { ticking = true; tickStart = Date.now(); }
+  renderTimer(); focusInput();
+}
+function finish() {
+  if (ticking) { elapsed = currentElapsed(); ticking = false; }
+  done = true; playing = false;
+  g.classList.add('solved');
+  save(); render(); renderTimer(); renderResult(true);
+}
+function renderResult(scroll) {
+  const box = $('result');
+  if (!done) { box.hidden = true; return; }
+  const ts = fmtTime(Math.floor(elapsed / 1000)), hints = revealed.size;
+  const cards = order.map(w => `<li class="wcard">
+      <div class="wh"><span class="wno">${w.num} ${w.d ? 'Down' : 'Across'}</span><span class="wa">${w.a}</span><span class="cat">${CAT[w.cat]}</span></div>
+      <p class="winfo">${w.info}</p>
+      <p class="wclue">Clue: ${w.clue}</p>
+    </li>`).join('');
+  box.innerHTML = `<h2>${hints ? 'Nice work!' : 'Perfect solve!'}</h2>
+    <p class="sub">Time ${ts} · ${hints ? `${hints} letter${hints > 1 ? 's' : ''} revealed` : 'no hints used'}</p>
+    <div class="acts"><button id="bCopy">Copy result</button><button class="ghost" id="bHide">Hide answers</button></div>
+    <ul class="wlist" id="wlist">${cards}</ul>`;
+  box.hidden = false;
+  $('bCopy').onclick = () => {
+    const text = `AbbVie Crossword ✓ ${ts}${hints ? ` · ${hints} hints` : ''}`;
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast('Copied'), () => toast(text)); else toast(text);
+  };
+  $('bHide').onclick = () => { const l = $('wlist'); l.hidden = !l.hidden; $('bHide').textContent = l.hidden ? 'Show answers' : 'Hide answers'; };
+  if (scroll) box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+let toastTimer;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 1800); }
+let pending = null;
+function ask(text, fn) { pending = fn; $('confirmTxt').textContent = text; $('confirm').hidden = false; }
+$('confirmYes').onclick = () => { const f = pending; pending = null; $('confirm').hidden = true; if (f) f(); };
+$('confirmNo').onclick = () => { pending = null; $('confirm').hidden = true; };
+
+/* ---------- input wiring ---------- */
+const kbd = $('kbd');
+function focusInput() { kbd.focus({ preventScroll: true }); }
+g.addEventListener('pointerdown', e => {
+  const el = e.target.closest('.cell');
+  if (!el || el.classList.contains('blk') || !playing) return;
+  e.preventDefault();
+  const i = +el.dataset.i;
+  if (i === cur) toggleDir(); else setCur(i, dir);
+  focusInput();
+});
+kbd.addEventListener('keydown', e => {
+  if (!playing || e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+  const k = e.key;
+  let handled = true;
+  if (k === 'ArrowLeft') moveArrow(0, -1);
+  else if (k === 'ArrowRight') moveArrow(0, 1);
+  else if (k === 'ArrowUp') moveArrow(-1, 0);
+  else if (k === 'ArrowDown') moveArrow(1, 0);
+  else if (k === 'Backspace') backspace();
+  else if (k === 'Tab' || k === 'Enter') stepWord(e.shiftKey ? -1 : 1);
+  else if (k === ' ') toggleDir();
+  else if (/^[a-z]$/i.test(k)) typeLetter(k);
+  else handled = false;
+  if (handled) e.preventDefault();
+});
+kbd.addEventListener('input', () => { const v = kbd.value.replace(/[^a-z]/gi, ''); kbd.value = ''; [...v].forEach(typeLetter); });
+$('bStart').onclick = unlock;
+$('timer').onclick = () => { if (done) return; playing ? lock() : unlock(); };
+$('cbPrev').onclick = () => { stepWord(-1); focusInput(); };
+$('cbNext').onclick = () => { stepWord(1); focusInput(); };
+$('bLetter').onclick = () => { if (!done && playing) reveal([cur]); focusInput(); };
+$('bWord').onclick = () => { if (!done && playing) reveal(curWord().cells); focusInput(); };
+$('bAll').onclick = () => { if (!done && playing) ask('Reveal the whole puzzle?', () => reveal(answer.map((a, i) => i).filter(i => answer[i] !== '#'))); };
+$('bClear').onclick = () => ask('Clear all your progress?', () => {
+  entries = Array(N * N).fill(''); revealed = new Set(); elapsed = 0; ticking = false; done = false;
+  g.classList.remove('solved'); renderResult(); render(); lock();
+});
+function applyOpts() {
+  $('optKeys').checked = opts.keys; $('keys').hidden = !opts.keys;
+  try { localStorage.setItem(KEY + ':opts', JSON.stringify(opts)); } catch {}
+  render();
+}
+$('optKeys').onchange = e => { opts.keys = e.target.checked; applyOpts(); };
+document.addEventListener('visibilitychange', () => { if (document.hidden && playing) lock(); });
+window.addEventListener('pagehide', save);
+
+applyOpts();
+renderResult();
+if (done) { g.classList.add('solved'); $('cover').hidden = true; $('desk').classList.remove('locked'); }
+else lock();
+render(); renderTimer();
+})();
+</script>

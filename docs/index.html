@@ -592,7 +592,7 @@ function setCur(i, d) {
   render(); scrollClue();
 }
 function gotoWord(w, empty = true) {
-  const i = empty ? (w.cells.find(ci => !entries[ci]) ?? w.cells[0]) : w.cells[0];
+  const i = empty ? (w.cells.find(ci => !isOk(ci)) ?? w.cells[0]) : w.cells[0];
   setCur(i, w.d);
 }
 function stepWord(delta) {
@@ -604,14 +604,16 @@ function stepWord(delta) {
   }
   gotoWord(order[k]);
 }
+const isOk = ci => entries[ci] === answer[ci];
+// 往後找這個詞裡還沒答對的格子（已答對的格子直接跳過）；整個詞都對了就換下一題
 function advance() {
   const w = curWord();
   const k = w.cells.indexOf(cur);
-  if (k < w.cells.length - 1) { cur = w.cells[k + 1]; }
-  else if (!isSolved()) {
-    const empty = w.cells.find(ci => !entries[ci]);
-    if (empty !== undefined) cur = empty; else { stepWord(1); return; }
-  }
+  const next = w.cells.slice(k + 1).find(ci => !isOk(ci));
+  if (next !== undefined) { cur = next; return; }
+  if (isSolved()) return;
+  const back = w.cells.find(ci => !isOk(ci));
+  if (back !== undefined) cur = back; else stepWord(1);
 }
 function moveArrow(dr, dc) {
   const d = dr ? 1 : 0;
@@ -642,6 +644,7 @@ function typeKana(str) {
     if (!isKana(ch)) continue;
     writeCell(cur, ch);
     lastTyped = cur;
+    if (!isOk(cur)) break;  // 填錯就停在這一格，方便馬上改試別的字
     advance();
   }
   buf = '';
@@ -662,7 +665,9 @@ function applyMark(table, quiet) {
   if (done) return;
   const i = lastTyped >= 0 && entries[lastTyped] ? lastTyped : cur;
   const ch = entries[i];
-  if (ch && table[ch] && writeCell(i, table[ch]) && !quiet) afterEdit();
+  if (!(ch && table[ch] && writeCell(i, table[ch]))) return;
+  if (i === cur && isOk(cur)) advance();  // 加上濁音後答對了，就往下一格
+  if (!quiet) afterEdit();
 }
 function romaji(key) {
   if (done) return;

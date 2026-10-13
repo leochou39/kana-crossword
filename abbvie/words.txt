@@ -1,0 +1,84 @@
+# 答案|英文提示|中文說明（完成後顯示）|類別
+ABBVIE|North Chicago drugmaker behind this whole puzzle|艾伯維：2013 年從 Abbott 分拆獨立的生技製藥公司|company
+ABBOTT|AbbVie's parent company before the 2013 spin-off|亞培：AbbVie 的前母公司|company
+ALLERGAN|Botox maker AbbVie bought in 2020 for about $63 billion|愛力根：2020 年被 AbbVie 收購的醫美與眼科藥廠|company
+CEREVEL|Neuroscience biotech AbbVie acquired in 2024|Cerevel：2024 年收購的神經科學生技公司|company
+CHICAGO|AbbVie's headquarters sit in North ___, Illinois|芝加哥：AbbVie 總部位於伊利諾州北芝加哥|company
+PIPELINE|Drugs still in development, collectively|研發管線：仍在開發中的藥物組合|company
+HUMIRA|Adalimumab brand that topped global drug sales for a decade|復邁（adalimumab）：抗 TNF 單株抗體，曾是全球銷售第一的藥|product
+SKYRIZI|Risankizumab, an IL-23 blocker for psoriasis and Crohn's|Skyrizi（risankizumab）：IL-23 抑制劑，用於乾癬、克隆氏症|product
+RINVOQ|Upadacitinib: a once-daily JAK inhibitor pill|Rinvoq（upadacitinib）：每日一次的口服 JAK 抑制劑|product
+IMBRUVICA|Ibrutinib, a BTK inhibitor for blood cancers|Imbruvica（ibrutinib）：BTK 抑制劑，治療血癌|product
+VENCLEXTA|Venetoclax, a BCL-2 inhibitor for CLL and AML|Venclexta（venetoclax）：BCL-2 抑制劑，治療 CLL、AML|product
+BOTOX|Famous toxin that also prevents chronic migraine|保妥適：肉毒桿菌素，也用於預防慢性偏頭痛|product
+VRAYLAR|Cariprazine for schizophrenia and bipolar disorder|Vraylar（cariprazine）：治療思覺失調症與躁鬱症|product
+UBRELVY|Ubrogepant: stops a migraine attack once it starts|Ubrelvy（ubrogepant）：偏頭痛發作時的急性治療|product
+QULIPTA|Atogepant, taken daily to prevent migraine|Qulipta（atogepant）：每日服用預防偏頭痛|product
+MAVYRET|Eight-week cure for all hepatitis C genotypes|Mavyret（glecaprevir／pibrentasvir）：8 週治癒各基因型 C 肝|product
+LINZESS|Linaclotide for IBS with constipation|Linzess（linaclotide）：治療便秘型大腸激躁症|product
+ELAHERE|First ADC approved for FR-alpha positive ovarian cancer|Elahere（mirvetuximab soravtansine）：卵巢癌的抗體藥物複合體|product
+EPKINLY|Epcoritamab, a bispecific antibody partnered with Genmab|Epkinly（epcoritamab）：與 Genmab 合作的雙特異性抗體|product
+JUVEDERM|Hyaluronic acid filler in the aesthetics portfolio|喬雅登：玻尿酸填充劑|product
+SYNTHROID|Levothyroxine brand for an underactive thyroid|Synthroid（levothyroxine）：甲狀腺低下的補充藥|product
+CREON|Pancrelipase capsules that help digest food|Creon（pancrelipase）：胰臟酵素膠囊，幫助消化|product
+VYALEV|24-hour under-the-skin infusion for advanced Parkinson's|Vyalev：晚期帕金森氏症的 24 小時皮下輸注|product
+IMMUNOLOGY|Therapeutic area of Humira, Skyrizi and Rinvoq|免疫學：Humira、Skyrizi、Rinvoq 所屬的治療領域|company
+ONCOLOGY|Therapeutic area of Imbruvica and Venclexta|腫瘤學：Imbruvica、Venclexta 所屬的治療領域|company
+AESTHETICS|Botox Cosmetic and Juvederm belong to this business|醫學美容：Botox Cosmetic、Juvederm 所屬事業|company
+TNF|Inflammatory cytokine that Humira blocks (abbr.)|腫瘤壞死因子：Humira 阻斷的發炎因子|science
+JAK|Kinase family that Rinvoq inhibits|Janus 激酶：Rinvoq 抑制的酵素家族|science
+BTK|Bruton's ___: Imbruvica's target (abbr.)|布魯頓酪胺酸激酶：Imbruvica 的作用標靶|science
+ADC|Antibody-drug conjugate, for short|抗體藥物複合體：把藥物接在抗體上精準送到癌細胞|science
+ANTIBODY|Y-shaped protein; Humira is a monoclonal one|抗體：Y 字形的免疫蛋白，Humira 是單株抗體|science
+BIOSIMILAR|Near-copy of a biologic, like the ones that hit Humira in 2023|生物相似藥：生物藥的近似版本，2023 年起在美國與 Humira 競爭|science
+GENERIC|Copy of a small-molecule drug after its patent expires|學名藥：小分子藥專利到期後的仿製藥|science
+PATENT|Its expiry opens the door to competitors|專利：到期後競爭藥就能上市|science
+PLACEBO|Sugar pill given to the control arm|安慰劑：對照組使用的無效成分藥|trial
+BLIND|Masked, as in a double-___ study|盲性：受試者或研究者不知道分組|trial
+RANDOMIZED|Assigned to an arm by chance|隨機分派：用隨機方式決定組別|trial
+ENDPOINT|Primary ___: the outcome a trial is powered to measure|試驗指標：試驗要評估的主要結果|trial
+COHORT|Group of participants followed together|世代／族群：一起被追蹤的一群受試者|trial
+PHASE|Trial stage numbered I to IV|試驗分期：第一期到第四期|trial
+PROTOCOL|The study's rulebook|試驗計畫書：規定試驗怎麼進行的文件|trial
+CONSENT|Informed ___: what participants sign before joining|知情同意：受試者加入前簽署的同意書|trial
+ADVERSE|___ event: any unfavorable medical occurrence|不良（事件）：試驗中發生的任何不利醫療狀況|trial
+SPONSOR|Company that funds and is responsible for the trial|試驗委託者：出資並負責試驗的公司|trial
+INVESTIGATOR|Doctor who leads the study at a site|試驗主持人：在試驗機構負責的醫師|trial
+MONITOR|CRA who visits sites to verify the data|監測者：到試驗機構核對資料的臨床研究專員|trial
+AUDIT|Independent check of how a trial is run|稽核：獨立檢查試驗執行是否合規|trial
+ARM|One treatment group in a trial|試驗組別：試驗中的一個治療組|trial
+CROSSOVER|Design where patients switch treatments partway through|交叉設計：受試者中途換到另一種治療|trial
+INTERIM|___ analysis: a look at the data before the trial ends|期中（分析）：試驗結束前先看資料|trial
+EFFICACY|How well a drug works under trial conditions|療效：在試驗條件下藥物的效果|trial
+SAFETY|The other half of "efficacy and ___"|安全性：與療效並列的評估重點|trial
+BIOMARKER|Measurable sign of disease or drug response|生物標記：可量測的疾病或藥物反應指標|trial
+TITRATION|Stepping the dose up gradually|劑量調整：逐步增加劑量|trial
+EXCLUSION|___ criteria keep certain patients out|排除（條件）：不能加入試驗的條件|trial
+INCLUSION|___ criteria decide who may join|納入（條件）：可以加入試驗的條件|trial
+SCREENING|Visit that checks whether a patient qualifies|篩選：確認病人是否符合資格的訪視|trial
+ENROLLMENT|Signing patients into the study|收案：讓受試者正式加入試驗|trial
+WASHOUT|Drug-free period that clears the previous treatment|藥物洗除期：停藥讓前一種藥代謝掉|trial
+BASELINE|Measurements taken before treatment starts|基準點：開始治療前的測量值|trial
+DROPOUT|Participant who leaves the study early|退出者：提早離開試驗的受試者|trial
+SITE|Hospital or clinic where the trial takes place|試驗機構：執行試驗的醫院或診所|trial
+LABEL|Approved prescribing information|仿單：核准的藥品使用說明|trial
+AMENDMENT|Protocol change made after the study starts|修正案：試驗開始後對計畫書的修改|trial
+DEVIATION|Protocol ___: not following the plan|偏離：沒有照計畫書執行|trial
+TRIAL|Clinical ___: the subject of half this puzzle|臨床試驗|trial
+FDA|US drug regulator|美國食品藥物管理局|trial
+EMA|European drug regulator|歐洲藥品管理局|trial
+IRB|Ethics board that approves a study (abbr.)|人體試驗委員會|trial
+GCP|Good Clinical Practice, for short|優良臨床試驗規範|trial
+CRO|Outsourced research partner, for short|受託研究機構|trial
+CRF|Case report form, for short|病例報告表|trial
+SAE|Serious adverse event, for short|嚴重不良事件|trial
+BLA|US application to market a biologic (abbr.)|生物製劑上市申請|trial
+DOSE|Amount of drug given at one time|劑量：一次給予的藥量|trial
+DATA|What the CRF collects|資料：病例報告表收集的內容|trial
+DRUG|Investigational ___: the product being tested|藥物：試驗中被測試的產品|trial
+QUERY|Question raised about an entered data point|資料疑問：對已輸入資料提出的確認問題|trial
+VISIT|Scheduled clinic appointment in a study|訪視：試驗中排定的回診|trial
+CURE|What Mavyret achieves for most hepatitis C patients|治癒：Mavyret 對多數 C 肝病人的效果|trial
+CRA|Clinical research associate, for short|臨床研究專員|trial
+SOP|Standard operating procedure, for short|標準作業程序|trial
+DSMB|Independent board that reviews unblinded safety data (abbr.)|數據安全監測委員會|trial

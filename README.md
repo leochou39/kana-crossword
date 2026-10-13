@@ -37,3 +37,7 @@ python3 generate.py
 重新出題時，今天以前已上線的題目會保持不變。新單字請加在 vocab.txt 最後面，避免影響既有題目的編號。
 
 這個版本全部屬於「第一學期」：2026-10-13 是試玩，隔天起為第一課、第二課……，題目依玩家當地日期每天輪換，365 天後從頭開始。遊玩紀錄只存在玩家自己的瀏覽器裡。
+
+## 英文版（AbbVie）
+
+`abbvie/` 是一次性的英文填字遊戲（AbbVie 產品與臨床試驗用語）。改 `abbvie/words.txt` 後執行 `python3 abbvie/generate.py`（在 abbvie 資料夾內）和 `abbvie/build.sh`，網址是 https://leochou39.github.io/kana-crossword/abbvie/
